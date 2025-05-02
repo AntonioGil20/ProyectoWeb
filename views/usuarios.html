@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Admin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        /* Panel izquierdo */
+        .left-panel {
+            width: 380px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .left-panel h2 {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+        .left-panel input {
+            width: 100%;
+            padding: 12px;
+            background-color: whitesmoke;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        .password-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            width: 96%;
+        }
+        .password-container input {
+            flex: 1; /* Esto hace que el input ocupe el espacio disponible */
+            padding: 12px;
+            background-color: whitesmoke;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        .password-container img {
+            width: 20px;
+            height: 20px;
+            margin-left: -35px; /* Posiciona la imagen dentro del input */
+            cursor: pointer;
+        }
+        .left-panel button {
+            margin-top: 10px;
+            padding: 12px;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-registrar { background-color: #28a745; }
+        .btn-eliminar { background-color: #dc3545; }
+        .btn-back { background-color: transparent; margin-top: 10px; float: right; }
+        .status-label {
+            display: none;
+            background-color: indianred;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* Panel derecho */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px;
+            background-color: whitesmoke;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        /* Estilos de los meseros */
+        .mesero-card {
+            display: flex;
+            border: 1px solid lightgray;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: white;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .mesero-card img {
+            width: 80px;
+            height: 90px;
+            background-color: gray;
+            border-radius: 5px;
+        }
+        .mesero-info {
+            margin-left: 20px;
+            flex: 1;
+        }
+        .mesero-info h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .mesero-info input {
+            margin-top: 5px;
+            width: 100%;
+            padding: 8px;
+            background-color: whitesmoke;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
+        }
+        .mesero-info button {
+            background-color: lightgray;
+            margin-top: 10px;
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        /* Ajustes de alineación */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Panel izquierdo -->
+        <div class="left-panel">
+            <div class="header-container">
+                <h2>Registrar Nuevo Mesero</h2>
+                <button class="btn-back">
+                    <img src="images/leftarrow.png" alt="Volver" width="30" height="30">
+                </button>
+            </div>
+            <input type="text" placeholder="Nombre" maxlength="15">
+            <div class="password-container">
+                <input type="password" placeholder="Contraseña" maxlength="15">
+                <img src="images/ver.png" alt="Mostrar">
+            </div>
+            <div class="password-container">
+                <input type="password" placeholder="Confirmar contraseña" maxlength="15">
+                <img src="images/ver.png" alt="Mostrar">
+            </div>
+            <div class="status-label">Error</div>
+            <button class="btn-registrar">Registrar</button>
+            <button class="btn-eliminar">Eliminar mesero</button>
+        </div>
+
+        <!-- Panel derecho -->
+        <div class="right-panel">
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar por nombre">
+            </div>
+
+            <!-- Lista de meseros -->
+            <div id="meseros-list">
+                <div class="mesero-card">
+                    <img src="images/user.png" alt="Usuario">
+                    <div class="mesero-info">
+                        <h3>Juan Pérez</h3>
+                        <input type="password" value="********" readonly>
+                        <button>Editar</button>
+                    </div>
+                </div>
+                <!-- Puedes repetir este bloque por cada mesero -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
