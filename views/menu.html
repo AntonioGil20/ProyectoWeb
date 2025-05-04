@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Alimentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 20;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .formulario {
+            width: 400px;
+            padding: 20px;
+            margin: 10px 0 0 10px;
+            background-color: white;
+        }
+
+        .navegacion {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            margin-top: -50px;
+        }
+
+        .nav-active {
+            background-color: white !important;
+            border-bottom: 2px solid #277AD2;
+        }
+
+        .navegacion button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .activo {
+            background-color: white;
+        }
+
+        .inactivo {
+            background-color: #EBEBEB;
+        }
+
+        h1 {
+            text-align: start;
+            color: #333333;
+            font-size: 30px;
+            margin: 10px 0;
+        }
+
+        label {
+            color: #333333;
+            margin: 10px 0 5px;
+            display: block;
+        }
+
+        .input-nombre {
+            width: 95%;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: whitesmoke;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .precio-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .precio-column {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .botones {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .botones button {
+            padding: 10px 20px;
+            color: white;
+            background-color: forestgreen;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .estado {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .estado span {
+            padding: 10px;
+            font-size: 15px;
+            display: none;
+            color: white;
+            background-color: #444;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        hr {
+            margin-bottom: 25px;
+        }
+
+        .estado img {
+            width: 20px;
+            height: 20px;
+            display: none;
+        }
+
+        .lista-container {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 10px;
+            margin-top: -10px;
+        }
+
+        .lista-alimentos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .alimento-item {
+            padding: 20px;
+            background-color: whitesmoke;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .alimento-item h3, .alimento-item p {
+            color: #333333;
+            margin: 5px 0;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .acciones button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .editar {
+            background-color: lightgray;
+            color: black;
+        }
+
+        .eliminar {
+            background-color: indianred;
+            color: white;
+        }
+        .nueva-categoria {
+            background-color: #277AD2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .eliminar-categoria {
+            background-color: #C0392B;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="formulario">
+            <div class="navegacion">
+                <button class="nav-active">Alimentos</button>
+                <button onclick="cargarVista('bebidas')">Bebidas</button>
+                <button onclick="cargarVista('postres')">Postres</button>
+                <button onclick="cargarVista('ingredientes')">Ingredientes</button>
+            </div>
+
+            <h1>Registro de Alimentos</h1>
+
+            <hr>
+
+            <label>Nombre del ingrediente principal:</label>
+            <input type="text" class="input-nombre" placeholder="Nombre del ingrediente" maxlength="25" />
+
+            <label>Categoría:</label>
+            <select>
+                <option>Carne</option>
+                <option>Queso</option>
+                <option>Verdura</option>
+                <option>Salsa</option>
+                <option>Otro</option>
+            </select>
+
+            <div class="botones-categorias">
+                <button class="nueva-categoria">Nueva categoría +</button>
+                <button class="eliminar-categoria">Eliminar categoría</button>
+            </div>
+
+            <div class="precio-container">
+                <div class="precio-column">
+                    <label>Precio MXM:</label>
+                    <input type="text" placeholder="Precio (MXN)" maxlength="10" />
+                </div>
+                <div class="precio-column">
+                    <label>Precio USD:</label>
+                    <input type="text" placeholder="Precio (USD)" maxlength="10" />
+                </div>
+            </div>
+
+            <div class="botones">
+                <button>Registrar</button>
+                <button style="display: none;">Guardar</button>
+            </div>
+
+            <div class="estado">
+                <span id="LblStatus">Estado aquí</span>
+                <img id="BtnIconStatus" src="#" alt="icono estado" />
+            </div>
+        </div>
+
+        <div class="lista-container">
+            <div class="filtros">
+                <select>
+                    <option>Filtrar por categoría</option>
+                </select>
+                <input type="text" placeholder="Buscar alimento" />
+            </div>
+
+            <div class="lista-alimentos">
+                <!-- Repite este bloque para cada ingrediente -->
+                <div class="alimento-item">
+                    <h3>Queso Oaxaca</h3>
+                    <p>Categoría: Queso</p>
+                    <p>Precio MXN: $10.00</p>
+                    <p>Precio USD: $0.50</p>
+                    <div class="acciones">
+                        <button class="editar">Editar</button>
+                        <button class="eliminar">Eliminar</button>
+                    </div>
+                </div>
+                <!-- ... -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

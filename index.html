@@ -64,8 +64,32 @@
     }
   </style>
 </head>
-<body>
+<script>
+  function cargarVista(vista) {
+    let ruta = "";
+    switch (vista) {
+      case "menu":
+        ruta = "alimentos.html";
+        break;
+      case "bebidas":
+        ruta = "bebidas.html";
+        break;
+      // Agrega aquí más casos según lo necesites
+      default:
+        ruta = "alimentos.html";
+        break;
+    }
 
+    fetch(ruta)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById("view-container").innerHTML = html;
+      })
+      .catch(err => console.error("Error cargando vista:", err));
+  }
+</script>
+
+<body>
   <!-- NAVBAR -->
   <div class="navbar">
     <!-- Íconos izquierda -->
