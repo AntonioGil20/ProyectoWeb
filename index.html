@@ -32,10 +32,11 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
+    
     .nav-icons .logo {
-  width: 45px !important;
-  height: 40px !important; /* o 'auto' si quieres mantener proporción */
-}
+      width: 45px !important;
+      height: 40px !important;
+    }
 
     .navbar img:hover {
       transform: scale(1.1);
@@ -51,7 +52,7 @@
       text-align: center;
       font-family: 'Lucida Console', monospace;
       font-size: 15px;
-      margin-right: 400px;
+      margin-right: 300px; /* Valor intermedio entre los dos originales */
     }
 
     /* CONTENEDOR DE VISTAS */
@@ -67,6 +68,11 @@
       display: block;
     }
 
+    #errorMessage {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <script>
@@ -90,7 +96,14 @@
       .then(html => {
         document.getElementById("view-container").innerHTML = html;
       })
-      .catch(err => console.error("Error cargando vista:", err));
+      .catch(err => {
+        console.error("Error cargando vista:", err);
+        document.getElementById("errorMessage").textContent = "Error al cargar la vista: " + err.message;
+      });
+  }
+  
+  function cerrarSesion() {
+    // Lógica para cerrar sesión
   }
 </script>
 
@@ -127,6 +140,7 @@
   <div id="view-container" class="view-container">
     <!-- Aquí se cargará el contenido externo -->
   </div>
+  <div id="errorMessage"></div>
 
   <script src="script.js"></script>
 </body>
