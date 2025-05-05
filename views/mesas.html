@@ -1,3 +1,197 @@
-<h2>Gestión de Mesas</h2>
-<p>Aquí iría el contenido dinámico de las mesas.</p>
-<!-- Puedes usar <script> para funcionalidades propias de esta vista -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vista de Mesas</title>
+  <style>
+    /* Estilos generales */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Columna de mesas */
+    .mesas {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .grid-mesas {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      min-width: 700px;
+    }
+
+    /* Botón para llevar */
+    .btn-llevar {
+      position: fixed;
+      bottom: 30px;
+      left: 40px;
+      background-color: white;
+      border: 1px solid lightgray;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-llevar img {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+    }
+
+    /* Columna de cuentas */
+    .cuentas {
+      width: 570px;
+      background-color: #f6f4f4;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .mesa-seleccionada {
+      background-color: #0356C9;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .pedidos {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .pedido {
+      border-bottom: 1px solid lightgray;
+      padding: 10px 0;
+    }
+
+    .pedido-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pedido-producto {
+      font-size: 17px;
+    }
+
+    .pedido-precio {
+      font-size: 17px;
+      color: black;
+    }
+
+    .btn-eliminar {
+      background-color: transparent;
+      border: none;
+      color: darkred;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .acciones {
+      display: flex;
+      gap: 10px;
+    }
+
+    .acciones button,
+    .acciones img {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .btn-pagar {
+      background-color: green;
+      color: white;
+      height: 50px;
+      line-height: 25fpx; /* centra el texto verticalmente */
+    }
+
+    .btn-ticket {
+      background-color: black;
+      color: whitesmoke;
+      height: 50px;
+      line-height: 25fpx; /* centra el texto verticalmente */
+    }
+
+    .btn-agregar {
+      background-color: transparent;
+      margin-top: -20px;
+    }
+
+    .btn-agregar img {
+      width: 50px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Columna de mesas -->
+    <div class="mesas">
+      <div class="grid-mesas">
+        <!-- Aquí se insertarán dinámicamente las mesas -->
+      </div>
+      <div class="btn-llevar">
+        <img src="images/llevar.png" alt="Para Llevar" title="Hacer pedido para llevar" />
+      </div>
+    </div>
+
+    <!-- Columna de cuentas -->
+    <div class="cuentas">
+      <div class="mesa-seleccionada">
+        <span id="nombre-mesa">Mesa</span>
+      </div>
+      <div class="pedidos">
+        <!-- Aquí se insertarán dinámicamente los pedidos -->
+        <div class="pedido">
+          <div class="pedido-info">
+            <span class="pedido-producto">2 x Tacos al Pastor</span>
+            <span class="pedido-precio">$40.00</span>
+            <button class="btn-eliminar" title="Eliminar pedido">X</button>
+          </div>
+        </div>
+        <!-- Más pedidos... -->
+      </div>
+      <div class="total">
+        <div>Total: $<span id="total-mxn">0.00</span> MXN</div>
+        <div>Total: $<span id="total-usd">0.00</span> USD</div>
+      </div>
+      <div class="acciones">
+        <button class="btn-pagar" title="Pagar esta cuenta">Pagar</button>
+        <button class="btn-agregar" title="Agregar a la cuenta">
+          <img src="images/order.png" alt="Agregar pedido" />
+        </button>
+        <button class="btn-ticket" title="Generar PDF de ticket">Generar Ticket</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

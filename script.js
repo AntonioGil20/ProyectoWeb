@@ -9,7 +9,10 @@ function cargarVista(vista) {
         console.error(err);
       });
   }
-  
+  function cerrarSesion() {
+    // Puedes agregar aquí lógica para limpiar sesión si la tienes
+    window.location.href = "login.html"; // Redirige al login
+  }
   // Actualizar fecha y hora
   function actualizarFechaHora() {
     const ahora = new Date();

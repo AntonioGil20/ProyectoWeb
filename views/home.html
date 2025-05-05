@@ -1,2 +1,141 @@
-<h2>Bienvenido a la App Tacos Web</h2>
-<p>Selecciona una opción del menú superior para comenzar.</p>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  .home-content {
+    background: linear-gradient(135deg, #3A3335, #FF9800);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+    padding-top: 20px;
+    margin: -20px;
+  }
+  .home-header {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .home-header img {
+    width: 100px;
+  }
+
+  .home-header h1 {
+    margin: 10px 0 0;
+    font-size: 28px;
+    color: white;
+  }
+
+  .home-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin: 0 auto;
+  }
+
+  .home-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .home-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .home-card i {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #FF9800;
+  }
+
+  .home-card h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .home-footer {
+    margin-top: 40px;
+    padding: 20px;
+    font-size: 14px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  @media (max-width: 480px) {
+    .home-card {
+      padding: 20px 10px;
+    }
+
+    .home-card i {
+      font-size: 28px;
+    }
+
+    .home-card h3 {
+      font-size: 16px;
+    }
+  }
+</style>
+<div class="home-content">
+
+<div class="home-header">
+  <img src="images/tacoslogo.png" alt="Logo" />
+  <h1>Bienvenido a App Tacos</h1>
+</div>
+
+<div class="home-container">
+  <div class="home-card" onclick="cargarVista('mesas')">
+    <i class="fas fa-chair"></i>
+    <h3>Mesas</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('menu')">
+    <i class="fas fa-receipt"></i>
+    <h3>Menu</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('bebidas')">
+    <i class="fas fa-wine-glass-alt"></i>
+    <h3>Bebidas</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('ingredientes')">
+    <i class="fas fa-carrot"></i>
+    <h3>Ingredientes</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('postres')">
+    <i class="fas fa-ice-cream"></i>
+    <h3>Postres</h3>
+  </div>
+
+  <div class="home-card" onclick="cargarVista('inventario')">
+    <i class="fas fa-box"></i>
+    <h3>Inventario</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('arqueos')">
+    <i class="fas fa-cash-register"></i>
+    <h3>Corte</h3>
+  </div>
+  <div class="home-card" onclick="cargarVista('config')">
+    <i class="fas fa-cog"></i>
+    <h3>Configuración</h3>
+  </div>
+  <div class="home-card" onclick="cerrarSesion()">
+    <i class="fas fa-sign-out-alt"></i>
+    <h3>Salir</h3>
+  </div>
+</div>
+
+<div class="home-footer">
+  © 2025 App Tacos. Todos los derechos reservados.
+</div>
+</div>
