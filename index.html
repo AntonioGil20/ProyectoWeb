@@ -32,6 +32,10 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
+    .nav-icons .logo {
+  width: 45px !important;
+  height: 40px !important; /* o 'auto' si quieres mantener proporción */
+}
 
     .navbar img:hover {
       transform: scale(1.1);
@@ -47,7 +51,7 @@
       text-align: center;
       font-family: 'Lucida Console', monospace;
       font-size: 15px;
-      margin-right: 200px;
+      margin-right: 400px;
     }
 
     /* CONTENEDOR DE VISTAS */
@@ -62,6 +66,7 @@
     .view.active {
       display: block;
     }
+
   </style>
 </head>
 <script>
@@ -94,7 +99,7 @@
   <div class="navbar">
     <!-- Íconos izquierda -->
     <div class="nav-icons">
-      <img src="images/tacoslogo.png" title="Tacos y Papas" onclick="cargarVista('home')" />
+      <img src="images/tacoslogo.png" class="logo" title="Tacos y Papas" onclick="cargarVista('home')" />
       <img src="images/table2.png" title="Mesas" onclick="cargarVista('mesas')" />
       <img src="images/edit.png" title="Editar Mesas" onclick="cargarVista('editarMesas')" />
       <div class="divider"></div>
@@ -113,8 +118,8 @@
 
     <!-- Íconos derecha -->
     <div class="nav-icons">
-      <img src="images/printer.png" title="Configurar ticketera" />
-      <img src="images/logout.png" title="Cerrar sesión" />
+      <img src="images/printer.png" title="Configurar ticketera" onclick="cargarVista('config')" />
+      <img src="images/logout.png" title="Cerrar sesión" onclick="cerrarSesion()" />
     </div>
   </div>
 

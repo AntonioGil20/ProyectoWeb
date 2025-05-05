@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Configuración de Impresoras</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      background-color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .section-divider {
+      border-top: 1px solid #ccc;
+      margin: 10px 0;
+    }
+
+    .horizontal-section {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      padding: 20px 0;
+    }
+
+    .column {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      background-color: #eaeaea;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .switch-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .update-section {
+      margin-top: 30px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .button {
+      background-color: forestgreen;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .status-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .status-label {
+      background-color: gray;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .porcentaje-section {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .porcentaje-section input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      font-size: 16px;
+      background-color: whitesmoke;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .activity-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Configuración de Impresoras</h1>
+    <div class="section-divider"></div>
+
+    <div class="horizontal-section">
+      <div class="column">
+        <label>Impresora de tickets</label>
+        <label>Seleccionar Impresora de Tickets:</label>
+        <select></select>
+
+        <label class="switch-label">
+          <span>Habilitar Impresión de Tickets:</span>
+          <input type="checkbox" />
+        </label>
+      </div>
+
+      <div class="column">
+        <label>Impresora de comandas</label>
+        <label>Seleccionar Impresora de Comandas:</label>
+        <select></select>
+
+        <label class="switch-label">
+          <span>Habilitar Impresión de Comandas:</span>
+          <input type="checkbox" />
+        </label>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="update-section">
+      <h2 style="text-align:center;">Actualizar precios</h2>
+
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          <input type="checkbox" />
+          <label>Alimentos</label>
+          <div class="activity-indicator"></div>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" />
+          <label>Bebidas</label>
+          <div class="activity-indicator"></div>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" />
+          <label>Postres</label>
+          <div class="activity-indicator"></div>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" />
+          <label>Todos</label>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top: 20px;">
+        <label>Conversión actual:</label>
+        <span>$XX.XX</span>
+      </div>
+
+      <label>Nuevo precio (Pesos por Dólar)</label>
+      <div class="input-group">
+        <input type="text" placeholder="$" />
+        <button class="button">Actualizar</button>
+        <div class="activity-indicator"></div>
+      </div>
+
+      <div class="status-container">
+        <span class="status-label" style="display: none;">Estado</span>
+        <img src="status-icon.png" style="display: none;" width="20" height="20"/>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="porcentaje-section">
+      <h2>Actualizar Porcentaje de Tarjeta</h2>
+      <p style="color: gray;">Porcentaje actual: 10%</p>
+      <input type="text" placeholder="Ingrese nuevo porcentaje" />
+      <button class="button" style="margin-top: 20px;">Actualizar Porcentaje</button>
+    </div>
+  </div>
+</body>
+</html>
