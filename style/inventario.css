@@ -148,7 +148,7 @@
 }
 
 .btn-danger {
-    background-color: #d32d30;
+    background-color: red;
     color: black;
     width: 30px;
     height: 30px;
@@ -175,6 +175,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    resize: both;
 }
 
 
@@ -192,7 +193,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+  }
   
+  /* Opcional: estilos para hover */
+  button:hover .btn-icon {
+    opacity: 0.8;
   }
   
   

@@ -1,20 +1,20 @@
-// js/models/compra.js
 export class Compra {
   constructor({
-    id = crypto.randomUUID(), // Genera un ID único (equivalente a Guid.NewGuid())
-    nombreProducto = null,
-    categoria = null,
-    cantidad = 0,
-    unidad = null,
-    total = 0,
-    fechaCompra = new Date(), // Equivalente a DateTime.Now
-  } = {}) {
-    this.id = id;
-    this.nombreProducto = nombreProducto;
-    this.categoria = categoria;
-    this.cantidad = cantidad;
-    this.unidad = unidad;
-    this.total = total;
-    this.fechaCompra = fechaCompra;
+    id,
+    nombreProducto,
+    categoria,
+    cantidad,
+    unidad,
+    total,
+    fechaCompra,
+  }) {
+    this.id =
+      id || `compra_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; // Usar el id proporcionado o generar uno nuevo
+    this.nombreProducto = nombreProducto || "";
+    this.categoria = categoria || "";
+    this.cantidad = cantidad || 0;
+    this.unidad = unidad || "";
+    this.total = total || 0;
+    this.fechaCompra = fechaCompra || new Date();
   }
 }

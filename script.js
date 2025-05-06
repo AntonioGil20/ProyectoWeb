@@ -1,3 +1,5 @@
+// script.js
+
 // Función principal para cargar vistas
 function cargarVista(vista) {
   const viewContainer = document.getElementById("view-container");
@@ -49,6 +51,23 @@ function cargarVista(vista) {
             if (errorMessage) {
               errorMessage.textContent =
                 "Error al cargar funciones de inventario";
+            }
+          });
+      } else if (vista === "usuarios") {
+        import("./scripts/usuarios.js")
+          .then((module) => {
+            console.log("Módulo de usuarios cargado");
+            // No necesitamos exportar renderMeseros como módulo, ya que se ejecuta automáticamente en usuarios.js
+            // Pero podemos asegurarnos de que las funciones globales estén disponibles
+            if (window.renderMeseros) {
+              window.renderMeseros();
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar usuarios.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent =
+                "Error al cargar funciones de usuarios";
             }
           });
       }

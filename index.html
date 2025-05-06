@@ -85,9 +85,27 @@
       case "bebidas":
         ruta = "bebidas.html";
         break;
-      // Agrega aquí más casos según lo necesites
+      case "usuarios":
+        ruta = "usuarios.html";
+        break;
+      case "mesas":
+        ruta = "mesas.html";
+        break;
+      case "editarMesas":
+        ruta = "editorMesas.html";
+        break;
+      case "inventario":
+        ruta = "inventario.html";
+        break;
+      case "arqueos":
+        ruta = "arqueos.html";
+        break;
+      case "config":
+        ruta = "config.html";
+        break;
+      case "home":
       default:
-        ruta = "alimentos.html";
+        ruta = "home.html";
         break;
     }
 
@@ -95,6 +113,13 @@
       .then(response => response.text())
       .then(html => {
         document.getElementById("view-container").innerHTML = html;
+        // Cargar el script específico para la vista de usuarios
+        if (vista === "usuarios") {
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = "scripts/usuarios.js";
+          document.body.appendChild(script);
+        }
       })
       .catch(err => {
         console.error("Error cargando vista:", err);
