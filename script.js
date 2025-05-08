@@ -13,8 +13,10 @@ function cargarVista(vista) {
   // Mapeo de vistas a rutas
   const rutas = {
     home: "views/home.html",
-    menu: "views/alimentos.html",
+    menu: "views/menu.html",
     bebidas: "views/bebidas.html",
+    postres: "views/postres.html",
+    ingredientes: "views/ingredientes.html",
     mesas: "views/mesas.html",
     editarMesas: "views/editarMesas.html",
     inventario: "views/inventario.html",
@@ -57,8 +59,6 @@ function cargarVista(vista) {
         import("./scripts/usuarios.js")
           .then((module) => {
             console.log("Módulo de usuarios cargado");
-            // No necesitamos exportar renderMeseros como módulo, ya que se ejecuta automáticamente en usuarios.js
-            // Pero podemos asegurarnos de que las funciones globales estén disponibles
             if (window.renderMeseros) {
               window.renderMeseros();
             }
@@ -85,8 +85,9 @@ function cargarVista(vista) {
 
 // Función para cerrar sesión
 function cerrarSesion() {
-  // Lógica adicional de limpieza puede ir aquí
-  window.location.href = "login.html";
+  // Limpiar estado de autenticación
+  localStorage.removeItem("isAuthenticated");
+  window.location.href = "index.html";
 }
 
 // Actualizar fecha y hora
