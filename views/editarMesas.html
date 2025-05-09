@@ -14,11 +14,15 @@
       flex-direction: row;
       height: 100vh;
     }
+    input{
+      width: 20px;
+    }
     .admin-panel {
       width: 320px;
       background-color: #ffffff;
       padding: 20px;
       box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      margin-left: 20px;
     }
     .admin-panel h2 {
       margin-top: 0;
@@ -31,7 +35,7 @@
       font-size: 14px;
     }
     .admin-panel input, .admin-panel select {
-      width: 100%;
+      width: 90%;
       padding: 8px;
       margin-top: 5px;
       border: 1px solid #ccc;
@@ -143,19 +147,10 @@
       <input type="text" class="search-box" placeholder="Buscar mesa por nombre">
 
       <div class="mesas-grid">
-        <!-- Ejemplo de tarjeta de mesa -->
-        <div class="mesa-card">
-          <h3>Mesa: 1</h3>
-          <p>Estado: Libre</p>
-          <p>Fila: 1 - Columna: 1</p>
-          <div class="actions">
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Eliminar</button>
-          </div>
-        </div>
-        <!-- Repetir tarjetas de mesa según sea necesario -->
+        <!-- Las tarjetas de mesas se generarán aquí dinámicamente -->
       </div>
     </div>
   </div>
+  <script type="module" src="../scripts/editarMesas.js"></script>
 </body>
 </html>
