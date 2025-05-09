@@ -1,261 +1,229 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario Bebidas</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            margin: 0;
-            padding: 20;
-        }
+<!-- views/bebidas.html -->
+<div class="container">
+    <!-- Panel izquierdo -->
+    <div class="left-panel">
+        <div class="header-container">
+            <h2>Registro de Bebidas</h2>
+            <button class="btn-back" onclick="window.cargarVista('home')">
+                <img src="images/leftarrow.png" alt="Volver" width="30" height="30">
+            </button>
+        </div>
+        <div class="navegacion">
+            <button onclick="window.cargarVista('alimentos')">Alimentos</button>
+            <button class="nav-active">Bebidas</button>
+            <button onclick="window.cargarVista('postres')">Postres</button>
+            <button onclick="window.cargarVista('ingredientes')">Ingredientes</button>
+        </div>
 
-        .container {
-            display: flex;
-            flex-direction: row;
-        }
+        <label for="nombre">Nombre de la bebida:</label>
+        <input type="text" id="nombre" placeholder="Nombre de la bebida" maxlength="25">
 
-        .formulario {
-            width: 400px;
-            padding: 20px;
-            margin: 10px 0 0 10px;
-            background-color: white;
-        }
+        <label for="tipoBebidas">Tipo de bebida:</label>
+        <select id="tipoBebidas">
+            <option value="Sin alcohol">Sin alcohol</option>
+            <option value="Con alcohol">Con alcohol</option>
+            <option value="Cerveza">Cerveza</option>
+            <option value="Vino">Vino</option>
+        </select>
 
-        .navegacion {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            margin-top: -50px;
-        }
-
-        .nav-active {
-        background-color: white !important;
-        border-bottom: 2px solid #277AD2;
-        }
-
-        .navegacion button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .activo {
-            background-color: white;
-        }
-
-        .inactivo {
-            background-color: #EBEBEB;
-        }
-
-        h1 {
-            text-align: start;
-            color: #333333;
-            font-size: 30px;
-            margin: 10px 0;
-        }
-        .botones button:hover {
-    background-color: darkgreen;
-}
-
-        label {
-            color: #333333;
-            margin: 10px 0 5px;
-            display: block;
-        }
-        .input-nombre {
-            width: 95%;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background-color: whitesmoke;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .precio-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        .precio-column {
-            flex: 1;
-            margin-right: 20px;
-        }
-
-        .botones {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .botones button {
-            padding: 10px 20px;
-            color: white;
-            background-color: forestgreen;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .estado {
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .estado span {
-            padding: 10px;
-            font-size: 15px;
-            display: none;
-            color: white;
-            background-color: #444;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-
-        hr {
-            margin-bottom: 25px;
-        }
-
-        .estado img {
-            width: 20px;
-            height: 20px;
-            display: none;
-        }
-
-        .lista-container {
-            flex: 1;
-            padding: 20px;
-            background-color: white;
-        }
-
-        .filtros {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 10px;
-            margin-top: -10px;
-        }
-
-        .lista-bebidas {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-
-        .bebida-item {
-            padding: 20px;
-            background-color: whitesmoke;
-            border-radius: 5px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .bebida-item h3, .bebida-item p {
-            color: #333333;
-            margin: 5px 0;
-        }
-
-        .acciones {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .acciones button {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .editar {
-            background-color: lightgray;
-            color: black;
-        }
-
-        .eliminar {
-            background-color: indianred;
-            color: white;
-        }
-
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="formulario">
-            <div class="navegacion">
-                <button onclick="cargarVista('menu')">Alimentos</button>
-                <button class="nav-active">Bebidas</button>
-                <button onclick="cargarVista('postres')">Postres</button>
-                <button onclick="cargarVista('ingredientes')">Ingredientes</button>
+        <div class="precio-container">
+            <div class="precio-column">
+                <label for="precioMx">Precio MXN:</label>
+                <input type="number" id="precioMx" placeholder="Precio (MXN)" step="0.01">
             </div>
-
-            <h1>Registro de Bebidas</h1>
-
-            <hr>
-
-            <label>Nombre de la bebida:</label>
-            <input type="text" class="input-nombre" placeholder="Nombre de la bebida" maxlength="25" />
-
-            <label>Tipo de bebida:</label>
-            <select>
-                <option>Sin alcohol</option>
-                <option>Con alcohol</option>
-                <option>Cerveza</option>
-                <option>Vino</option>
-            </select>
-
-            <div class="precio-container">
-                <div class="precio-column">
-                    <label>Precio MXM:</label>
-                    <input type="text" placeholder="Precio (MXN)" maxlength="10" />
-                </div>
-                <div class="precio-column">
-                    <label>Precio USD:</label>
-                    <input type="text" placeholder="Precio (USD)" maxlength="10" />
-                </div>
-            </div>
-
-            <div class="botones">
-                <button>Registrar</button>
-                <button style="display: none;">Guardar</button>
-            </div>
-
-            <div class="estado">
-                <span id="LblStatus">Estado aquí</span>
-                <img id="BtnIconStatus" src="#" alt="icono estado" />
+            <div class="precio-column">
+                <label for="precioUSD">Precio USD:</label>
+                <input type="number" id="precioUSD" placeholder="Precio (USD)" step="0.01">
             </div>
         </div>
 
-        <div class="lista-container">
-            <div class="filtros">
-                <select>
-                    <option>Filtro</option>
-                </select>
-                <input type="text" placeholder="Buscar bebidas" />
-            </div>
+        <div class="botones">
+            <button class="btn-registrar" onclick="registerBebida()">Registrar</button>
+            <button class="btn-eliminar" onclick="deleteBebidaByName(document.getElementById('nombre').value)">Eliminar</button>
+        </div>
 
-            <div class="lista-bebidas">
-                <!-- Repite este bloque para cada bebida -->
-                <div class="bebida-item">
-                    <h3>Coca Cola</h3>
-                    <p>Tipo: Sin alcohol</p>
-                    <p>Precio MXN: $25.00</p>
-                    <p>Precio USD: $1.25</p>
-                    <div class="acciones">
-                        <button class="editar">Editar</button>
-                        <button class="eliminar">Eliminar</button>
-                    </div>
-                </div>
-                <!-- ... -->
-            </div>
+        <div class="status-label" id="statusLabel">Estado aquí</div>
+    </div>
+
+    <!-- Panel derecho -->
+    <div class="right-panel">
+        <div class="filtros">
+            <select id="filtroTipo" onchange="filterBebidas()">
+                <option value="">Todos</option>
+                <option value="Sin alcohol">Sin alcohol</option>
+                <option value="Con alcohol">Con alcohol</option>
+                <option value="Cerveza">Cerveza</option>
+                <option value="Vino">Vino</option>
+            </select>
+            <input type="text" id="buscarBebida" placeholder="Buscar bebida" onkeyup="filterBebidas()">
+        </div>
+
+        <div class="lista-bebidas" id="bebidas-list">
+            <!-- Se llena dinámicamente con JavaScript -->
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        padding: 20px;
+        gap: 20px;
+        justify-content: space-between;
+    }
+    .left-panel {
+        width: 380px;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .left-panel h2 {
+        font-size: 24px;
+        color: #333;
+        margin: 0;
+    }
+    .navegacion {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .navegacion button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: #333333;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        background-color: gray;
+    }
+    .nav-active {
+        background-color: lightslategray !important;
+        border-bottom: 2px solid #277AD2;
+        color: black;
+    }
+    .navegacion button:hover {
+        background-color: #C0C0C0;
+    }
+    .left-panel label {
+        display: block;
+        margin-top: 15px;
+        color: #525252;
+        font-size: 14px;
+    }
+    .left-panel input, .left-panel select {
+        width: 100%;
+        padding: 12px;
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-top: 10px;
+        box-sizing: border-box;
+    }
+    .precio-container {
+        display: flex;
+        gap: 10px;
+    }
+    .precio-column {
+        flex: 1;
+    }
+    .botones {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .left-panel button {
+        padding: 12px;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .btn-registrar { background-color: #28a745; }
+    .btn-registrar:hover { background-color: #218838; }
+    .btn-eliminar { background-color: #dc3545; }
+    .btn-eliminar:hover { background-color: #c82333; }
+    .btn-back { background-color: transparent; margin-top: 10px; float: right; }
+    .status-label {
+        display: none;
+        background-color: indianred;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        margin-top: 10px;
+    }
+    .right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .filtros {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .filtros select, .filtros input {
+        padding: 12px;
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    .lista-bebidas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .bebida-item {
+        display: block;
+        border: 1px solid lightgray;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .bebida-info {
+        margin-left: 0;
+    }
+    .bebida-info h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+    }
+    .bebida-info p {
+        margin: 5px 0;
+        color: #666666;
+        font-size: 14px;
+    }
+    .acciones {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .acciones button {
+        padding: 8px 15px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+    .editar {
+        background-color: lightgray;
+        color: black;
+    }
+    .eliminar {
+        background-color: indianred;
+        color: white;
+    }
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>

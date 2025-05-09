@@ -13,8 +13,8 @@ function cargarVista(vista) {
   // Mapeo de vistas a rutas
   const rutas = {
     home: "views/home.html",
-    menu: "views/menu.html", // "Menú" ahora apunta a "Alimentos" por defecto
-    alimentos: "views/alimentos.html",
+    menu: "views/menu.html", // "Menú" apunta a "Alimentos" por defecto
+    alimentos: "views/menu.html",
     bebidas: "views/bebidas.html",
     postres: "views/postres.html",
     ingredientes: "views/ingredientes.html",
@@ -102,6 +102,22 @@ function cargarVista(vista) {
             if (errorMessage) {
               errorMessage.textContent =
                 "Error al cargar funciones de alimentos";
+            }
+          });
+      } else if (vista === "bebidas") {
+        import("./scripts/bebidas.js")
+          .then((module) => {
+            console.log("Módulo de bebidas cargado");
+            if (window.renderBebidas) {
+              window.renderBebidas();
+            } else {
+              console.error("renderBebidas no está definido en el módulo.");
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar bebidas.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent = "Error al cargar funciones de bebidas";
             }
           });
       }
