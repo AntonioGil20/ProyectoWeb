@@ -13,7 +13,8 @@ function cargarVista(vista) {
   // Mapeo de vistas a rutas
   const rutas = {
     home: "views/home.html",
-    menu: "views/menu.html",
+    menu: "views/menu.html", // "Menú" ahora apunta a "Alimentos" por defecto
+    alimentos: "views/alimentos.html",
     bebidas: "views/bebidas.html",
     postres: "views/postres.html",
     ingredientes: "views/ingredientes.html",
@@ -74,7 +75,6 @@ function cargarVista(vista) {
         import("./scripts/editarMesas.js")
           .then((module) => {
             console.log("Módulo de mesas cargado");
-            // Llamar a renderMesas directamente cada vez que se carga la vista
             if (window.renderMesas) {
               window.renderMesas();
             } else {
@@ -85,6 +85,23 @@ function cargarVista(vista) {
             console.error("Error al cargar editarMesas.js:", err);
             if (errorMessage) {
               errorMessage.textContent = "Error al cargar funciones de mesas";
+            }
+          });
+      } else if (vista === "menu" || vista === "alimentos") {
+        import("./scripts/alimentos.js")
+          .then((module) => {
+            console.log("Módulo de alimentos cargado");
+            if (window.renderAlimentos) {
+              window.renderAlimentos();
+            } else {
+              console.error("renderAlimentos no está definido en el módulo.");
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar alimentos.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent =
+                "Error al cargar funciones de alimentos";
             }
           });
       }
