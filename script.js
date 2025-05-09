@@ -70,8 +70,24 @@ function cargarVista(vista) {
                 "Error al cargar funciones de usuarios";
             }
           });
+      } else if (vista === "editarMesas") {
+        import("./scripts/editarMesas.js")
+          .then((module) => {
+            console.log("Módulo de mesas cargado");
+            // Llamar a renderMesas directamente cada vez que se carga la vista
+            if (window.renderMesas) {
+              window.renderMesas();
+            } else {
+              console.error("renderMesas no está definido en el módulo.");
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar editarMesas.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent = "Error al cargar funciones de mesas";
+            }
+          });
       }
-      // Aquí puedes añadir más inicializaciones para otras vistas
     })
     .catch((err) => {
       console.error("Error:", err);
@@ -85,7 +101,6 @@ function cargarVista(vista) {
 
 // Función para cerrar sesión
 function cerrarSesion() {
-  // Limpiar estado de autenticación
   localStorage.removeItem("isAuthenticated");
   window.location.href = "index.html";
 }
@@ -113,13 +128,8 @@ function actualizarFechaHora() {
 
 // Inicialización de la aplicación
 window.addEventListener("DOMContentLoaded", () => {
-  // Hacer la función accesible globalmente
   window.cargarVista = cargarVista;
-
-  // Configurar fecha y hora
   actualizarFechaHora();
   setInterval(actualizarFechaHora, 1000);
-
-  // Cargar vista inicial
   cargarVista("home");
 });
