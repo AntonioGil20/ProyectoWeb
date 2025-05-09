@@ -32,22 +32,27 @@ async function renderMesas(retryCount = 0) {
       return;
     }
 
-    mesas.forEach((mesa) => {
-      console.log("Renderizando mesa:", mesa); // Depuración
-      const card = document.createElement("div");
-      card.className = "mesa-card";
-      card.innerHTML = `
-                <img src="images/table.png" alt="Mesa">
-                <div class="mesa-info">
-                    <h3>${mesa.nombreMesa}</h3>
-                    <p>Estado: ${mesa.estado}</p>
-                    <p>Posición: Fila ${mesa.fila}, Columna ${mesa.columna}</p>
-                    <button onclick="editMesa('${mesa.id}')">Editar</button>
-                    <button onclick="deleteMesa('${mesa.id}')">Eliminar</button>
-                </div>
-            `;
-      mesasList.appendChild(card);
-    });
+mesas.forEach((mesa) => {
+  console.log("Renderizando mesa:", mesa); // Depuración
+  const card = document.createElement("div");
+  card.className = "mesa-card";
+  card.innerHTML = `
+    <div class="mesa-info">
+      <h3>${mesa.nombreMesa}</h3>
+      <p>Estado: ${mesa.estado}</p>
+      <p>Posición: Fila ${mesa.fila}, Columna ${mesa.columna}</p>
+      <div class="mesa-actions">
+        <button class="btn-edit" onclick="editMesa('${mesa.id}')">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="btn-delete" onclick="deleteMesa('${mesa.id}')">
+          <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  `;
+  mesasList.appendChild(card);
+});
   } catch (error) {
     console.error("Error en renderMesas:", error);
     const statusLabel = document.getElementById("statusLabel");
