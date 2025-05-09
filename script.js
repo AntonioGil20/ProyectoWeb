@@ -136,6 +136,25 @@ function cargarVista(vista) {
               errorMessage.textContent = "Error al cargar funciones de postres";
             }
           });
+      } else if (vista === "ingredientes") {
+        import("./scripts/ingredientes.js")
+          .then((module) => {
+            console.log("Módulo de ingredientes cargado");
+            if (window.renderIngredientes) {
+              window.renderIngredientes();
+            } else {
+              console.error(
+                "renderIngredientes no está definido en el módulo."
+              );
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar ingredientes.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent =
+                "Error al cargar funciones de ingredientes";
+            }
+          });
       }
     })
     .catch((err) => {
