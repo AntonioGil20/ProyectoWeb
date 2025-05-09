@@ -113,12 +113,28 @@ async function registerAlimento() {
     return;
   }
 
-  // Verificar si el ingrediente ya está registrado (excepto si estamos editando el mismo alimento)
+  // Obtener todos los alimentos para verificar duplicados
   const alimentos = await AlimentoService.getAlimentos();
+
+  // Si estamos editando, obtener el alimento actual para comparar el nombre original
+  let originalIngrediente = null;
+  if (editingAlimentoId) {
+    const alimentoActual = alimentos.find(
+      (alimento) => alimento.id === editingAlimentoId
+    );
+    if (alimentoActual) {
+      originalIngrediente = alimentoActual.ingrediente;
+    }
+  }
+
+  // Verificar si el ingrediente ya está registrado (excepto si es el mismo nombre del alimento que estamos editando)
   const isRegistered = alimentos.some(
     (alimento) =>
-      alimento.ingrediente === ingrediente && alimento.id !== editingAlimentoId
+      alimento.ingrediente === ingrediente &&
+      alimento.id !== editingAlimentoId &&
+      (!editingAlimentoId || ingrediente !== originalIngrediente)
   );
+
   if (isRegistered) {
     if (statusLabel) {
       statusLabel.textContent = "El ingrediente ya está registrado.";

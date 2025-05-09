@@ -20,11 +20,10 @@
 
         <label for="tipoPlatillo">Categoría:</label>
         <select id="tipoPlatillo">
-            <option value="Carne">Carne</option>
-            <option value="Queso">Queso</option>
-            <option value="Verdura">Verdura</option>
-            <option value="Salsa">Salsa</option>
-            <option value="Otro">Otro</option>
+                <option value="Taco">Taco</option>
+                <option value="Quesadilla">Quesadilla</option>
+                <option value="Tostada">Tostada</option>
+                <option value="Papa">Papa</option>
         </select>
 
         <div class="botones-categorias">
@@ -55,12 +54,11 @@
     <div class="right-panel">
         <div class="filtros">
             <select id="filtroCategoria" onchange="filterAlimentos()">
-                <option value="">Filtrar por categoría</option>
-                <option value="Carne">Carne</option>
-                <option value="Queso">Queso</option>
-                <option value="Verdura">Verdura</option>
-                <option value="Salsa">Salsa</option>
-                <option value="Otro">Otro</option>
+                <option value="">Todos</option>
+                <option value="Taco">Taco</option>
+                <option value="Quesadilla">Quesadilla</option>
+                <option value="Tostada">Tostada</option>
+                <option value="Papa">Papa</option>
             </select>
             <input type="text" id="buscarAlimento" placeholder="Buscar alimento" onkeyup="filterAlimentos()">
         </div>
@@ -103,11 +101,12 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        background-color: #EBEBEB;
+        background-color: gray;
     }
     .nav-active {
-        background-color: white !important;
+        background-color: lightslategray !important;
         border-bottom: 2px solid #277AD2;
+        color: black;
     }
     .left-panel label {
         display: block;
