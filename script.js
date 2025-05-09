@@ -120,6 +120,22 @@ function cargarVista(vista) {
               errorMessage.textContent = "Error al cargar funciones de bebidas";
             }
           });
+      } else if (vista === "postres") {
+        import("./scripts/postres.js")
+          .then((module) => {
+            console.log("Módulo de postres cargado");
+            if (window.renderPostres) {
+              window.renderPostres();
+            } else {
+              console.error("renderPostres no está definido en el módulo.");
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar postres.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent = "Error al cargar funciones de postres";
+            }
+          });
       }
     })
     .catch((err) => {
