@@ -14,10 +14,7 @@
             <div class="left-panel">
                 <h2>Inventario</h2>
                 <div class="controls">
-                    <button class="btn btn-secondary" title="Refrescar inventario" onclick="refreshInventory()">
-                        <img src="images/refresh.png" alt="Refrescar" class="refresh-btn">
-                    </button>
-                    <button class="btn btn-primary" onclick="startNewPurchase()">+ Nueva Compra</button>
+                    <input type="text" class="form-control1" id="searchText" placeholder="Buscar producto..." oninput="filterInventory()">
                     <select class="form-select" id="categoryFilter" onchange="filterCategoryChanged()">
                         <option value="Todas" selected>Todas</option>
                         <option value="Carnes">Carnes</option>
@@ -28,20 +25,24 @@
                         <option value="Desechables">Desechables</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    <button class="btn btn-primary" onclick="startNewPurchase()">+ Nueva Compra</button>
+                   <button class="btn btn-secondary" title="Refrescar inventario" onclick="refreshInventory()">
+                        <img src="images/refresh.png" alt="Refrescar" class="refresh-btn">
+                    </button>
                 </div>
-                <input type="text" class="form-control" id="searchText" placeholder="Buscar producto..." oninput="filterInventory()">
                 <div class="table-header">
                     <span>Producto</span>
                     <span>Categoría</span>
                     <span>Cantidad</span>
                     <span>Unidad</span>
                     <span>Total</span>
-                    <span>Última Compra</span>
+                    <span>Fecha</span>
                     <span></span>
                     <span></span>
                 </div>
-                <div class="table-body" id="inventoryTable"></div>
-            </div>
+    <div class="table-container"> <!-- Contenedor de scroll añadido -->
+        <div class="table-body" id="inventoryTable"></div>
+    </div>            </div>
 
             <!-- Right Section: Purchase Registration -->
             <div class="right-panel">
@@ -49,9 +50,13 @@
                     <h3>Registrar Compra</h3>
                 </div>
                 <div class="form-container">
-                    <label>Producto</label>
+                <div class="form-row">
+                    <div>
+                    <label>Producto:</label>
                     <input type="text" class="form-control" id="nombreProducto" placeholder="Nombre del producto">
-                    <label>Categoría</label>
+                    </div>
+                    <div>
+                    <label>Categoría:</label>
                     <select class="form-select" id="categoria">
                         <option value="Carnes">Carnes</option>
                         <option value="Verduras">Verduras</option>
@@ -61,13 +66,15 @@
                         <option value="Desechables">Desechables</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    </div>
+                </div>
                     <div class="form-row">
                         <div>
-                            <label>Cantidad</label>
+                            <label>Cantidad:</label>
                             <input type="number" class="form-control" id="cantidad" placeholder="Cantidad comprada" step="0.01">
                         </div>
                         <div>
-                            <label>Unidad</label>
+                            <label>Unidad:</label>
                             <select class="form-select" id="unidad">
                                 <option value="Kg">Kg</option>
                                 <option value="Litros">Litros</option>
@@ -76,15 +83,15 @@
                             </select>
                         </div>
                     </div>
-                    <label>Precio</label>
+                    <label>Precio:</label>
                     <input type="number" class="form-control" id="total" placeholder="Precio en pesos" step="0.01">
                     <label>Relacionar Platillo/Bebida</label>
                     <div class="dynamic-fields">
                         <div class="dynamic-field">
                             <input type="text" class="form-control" id="relatedProduct" placeholder="Producto relacionado">
                         </div>
-                        <div class="form-row">
-                            <button class="btn btn-primary" onclick="addRelatedProduct()">Agregar otro producto relacionado</button>
+                        <div class="form-container1">
+                            <button class="btn btn-primary2" onclick="addRelatedProduct()">Agregar otro producto relacionado</button>
                             <button class="btn btn-danger" id="removeRelated" style="display: none;" onclick="removeLastRelatedProduct()">Eliminar último</button>
                         </div>
                         <div id="relatedProductsList"></div>

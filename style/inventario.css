@@ -1,54 +1,123 @@
+/* ESTRUCTURA PRINCIPAL */
 .container {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: white;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 10px;
+    background: #f5f7fa;
+    gap: 0;
 }
+
 
 .grid-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    height: 100%;
+    grid-template-columns: 60% 40%; /* Control preciso */
+    height: 90vh; /* Altura fija para contener scroll interno */
     gap: 20px;
 }
 
+/* Panel Izquierdo - Inventario */
 .left-panel {
-    padding: 20px;
-    background-color: white;
-    overflow-y: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-.right-panel {
-    background-color: #f5f5f5;
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow: hidden; /* Contenedor padre oculta overflow */
+}
+.left-panel h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eaeaea;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* Botón | Espacio | Select */
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* PANEL DERECHO REDISEÑADO */
+.right-panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .panel-header {
-    background-color: #3d52d5;
+    background: linear-gradient(135deg, #3a4fc7 0%, #283b99 100%);
     color: white;
-    padding: 15px;
-    text-align: center;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    padding: 18px 25px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .panel-header h3 {
     margin: 0;
     font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
+
+/* FORMULARIO MEJORADO */
 .form-container {
     padding: 25px;
-    overflow-y: auto;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: calc(100% - 70px);
+    gap: 20px;
+}
+.form-container1 {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: calc(100% - 70px);
+}
+.form-section {
+    display: grid;
+    gap: 18px;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: end; /* Alinea los elementos en la parte inferior */
+}
+/* Asegura que todos los elementos tengan la misma altura */
+.form-row .form-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Toma toda la altura disponible */
 }
 
+.form-row label {
+    margin-bottom: 8px; /* Espacio consistente entre label y control */
+    height: 20px; /* Altura fija para los labels */
+}
+
+.form-row .form-control, 
+.form-row .form-select {
+    height: 44px; /* Altura idéntica para inputs y selects */
+    box-sizing: border-box; /* Incluye padding en la altura total */
+    margin-top: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.form-group label {
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
 .left-panel h2 {
     margin: 0 0 20px 0;
     font-size: 1.8rem;
@@ -64,18 +133,52 @@
 }
 
 .form-control, .form-select {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    width: 90%;
+    background: #f8fafc;
+}
+.form-control1 {
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
     width: 100%;
+    background: #f8fafc;
 }
-
+.form-control:focus, .form-select:focus, .form-control1:focus {
+    border-color: #3d52d5;
+    box-shadow: 0 0 0 3px rgba(61, 82, 213, 0.1);
+    outline: none;
+}
 .form-select {
-    width: 200px;
+    width: 160px;
+}
+/* SECCIÓN DINÁMICA MEJORADA */
+.dynamic-fields {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed #e2e8f0;
+    margin-top: 0px;
 }
 
+.dynamic-field {
+    margin-bottom: 15px;
+}
+
+.table-container {
+    flex: 1;
+    overflow-y: auto; /* Scroll vertical */
+    max-height: calc(100vh - 220px); /* Ajusta según tus necesidades */
+    border: 1px solid #f1f1f1;
+    border-radius: 0 0 8px 8px;
+    margin-top: -8px; /* Compensa el espacio del header */
+}
 .table-header, .table-row {
     display: grid;
     grid-template-columns: repeat(6, 1fr) 60px 40px;
@@ -84,17 +187,25 @@
     border-bottom: 1px solid #eee;
 }
 
+/* Tabla de Inventario */
 .table-header {
-    font-weight: bold;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #ddd;
+    display: grid;
+    grid-template-columns: 2fr 1fr 0.8fr 0.8fr 1fr 1fr 50px 50px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
 }
 
 .table-row {
-    background-color: #fff;
-    border-radius: 5px;
-    margin: 5px 0;
-    transition: background-color 0.2s;
+    display: grid;
+    grid-template-columns: 2fr 1fr 0.8fr 0.8fr 1fr 1fr 50px 50px;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    transition: all 0.2s;
 }
 
 .table-row:hover {
@@ -107,49 +218,69 @@
     align-items: center;
     justify-content: center;
 }
-
-.form-row {
+/* Formulario */
+.form-container {
+    padding: 25px;
     display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
+    flex-direction: column;
+    gap: 18px;
 }
 
 .form-row > div {
     flex: 1;
 }
-
+/* Botones */
+.btn {
+    font-weight: 500;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
 .btn-primary {
-    background-color: #1d2b86;
-    color: white;
+    background: #3d52d5;
     padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-primary:hover {
-    background-color: #162166;
-}
-
-.btn-success {
-    background-color: #4c956c;
+    border-radius: 8px;
+    border-color: transparent;
     color: white;
-    padding: 12px 30px;
-    border-radius: 5px;
+    margin-top: 0px;
+}
+.btn-primary2 {
+    background: #3d52d5;
+    color: white;
     border: none;
-    cursor: pointer;
+}
+.btn-primary:hover {
+    background: #2f44b5;
+    transform: translateY(-1px);
+}
+.btn-primary2:hover {
+    background: #2f44b5;
+    transform: translateY(-1px);
+}
+.btn-success {
+    background: #38a169;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 14px;
+    font-weight: 600;
     margin-top: 10px;
-    transition: background-color 0.2s;
 }
 
 .btn-success:hover {
-    background-color: #3c7756;
+    background: #2f855a;
 }
 
+
 .btn-danger {
-    background-color: red;
-    color: black;
+    background-color: rgb(233, 3, 3);
+    color: white;
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -183,17 +314,26 @@
     background-color: orange;
 }
 
+/* Reemplaza los estilos existentes del botón refresh con esto */
+.btn-secondary {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-top: 0px !important;
+    box-shadow: none !important;
+}
+
 .refresh-btn {
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) saturate(100%) invert(39%) sepia(99%) saturate(671%) hue-rotate(196deg) brightness(93%) contrast(93%);
+    transition: transform 0.3s ease;
+}
+
+.refresh-btn:hover {
+    transform: rotate(90deg);
+    filter: brightness(0) saturate(100%) invert(24%) sepia(99%) saturate(2155%) hue-rotate(216deg) brightness(93%) contrast(93%);
+}
 
   .btn-icon {
     width: 16px;
@@ -205,5 +345,39 @@
   button:hover .btn-icon {
     opacity: 0.8;
   }
-  
+  /* Responsive */
+@media (max-width: 1200px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-header, .table-row {
+        grid-template-columns: 1.5fr 1fr 0.7fr 0.7fr 1fr;
+    }
+    
+    .table-header span:nth-child(6),
+    .table-row span:nth-child(6) {
+        display: none;
+    }
+}
+/* SCROLLBAR PERSONALIZADO */
+/* Scrollbar para WebKit (Chrome, Safari) */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+/* Scrollbar para Firefox */
+.table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f1f5f9;
+}
   
