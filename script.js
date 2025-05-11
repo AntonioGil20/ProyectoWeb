@@ -9,19 +9,19 @@ function cargarVista(vista) {
     console.error("Contenedor de vistas no encontrado.");
     return;
   }
-// Verificar carga completa de Firebase
-function checkFirebase() {
-  return new Promise((resolve) => {
-    const check = () => {
-      if (window.firebase && firebase.apps.length > 0) {
-        resolve();
-      } else {
-        setTimeout(check, 100);
-      }
-    };
-    check();
-  });
-}
+  // Verificar carga completa de Firebase
+  function checkFirebase() {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (window.firebase && firebase.apps.length > 0) {
+          resolve();
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
   // Mapeo de vistas a rutas
   const rutas = {
     home: "views/home.html",
@@ -56,7 +56,7 @@ function checkFirebase() {
       viewContainer.innerHTML = html;
 
       // Cargar scripts específicos para cada vista
-      
+
       if (vista === "inventario") {
         import("./scripts/inventario.js")
           .then((module) => {
@@ -70,20 +70,18 @@ function checkFirebase() {
                 "Error al cargar funciones de inventario";
             }
           });
-      } 
-        else if (vista === 'mesas') {
-     checkFirebase();
-    // Cargar HTML y luego scripts específicos
-     fetch("views/mesas.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("view-container").innerHTML = html;
-        return import("./scripts/mesas.js");
-      })
-      .then(() => console.log("Módulo de mesas cargado"))
-      .catch(err => console.error("Error:", err));
-  }
-      else if (vista === "usuarios") {
+      } else if (vista === "mesas") {
+        checkFirebase();
+        // Cargar HTML y luego scripts específicos
+        fetch("views/mesas.html")
+          .then((r) => r.text())
+          .then((html) => {
+            document.getElementById("view-container").innerHTML = html;
+            return import("./scripts/mesas.js");
+          })
+          .then(() => console.log("Módulo de mesas cargado"))
+          .catch((err) => console.error("Error:", err));
+      } else if (vista === "usuarios") {
         import("./scripts/usuarios.js")
           .then((module) => {
             console.log("Módulo de usuarios cargado");
@@ -98,7 +96,7 @@ function checkFirebase() {
                 "Error al cargar funciones de usuarios";
             }
           });
-      }   else if (vista === "editarMesas") {
+      } else if (vista === "editarMesas") {
         import("./scripts/editarMesas.js")
           .then((module) => {
             console.log("Módulo de mesas cargado");
@@ -180,6 +178,22 @@ function checkFirebase() {
             if (errorMessage) {
               errorMessage.textContent =
                 "Error al cargar funciones de ingredientes";
+            }
+          });
+      } else if (vista === "arqueos") {
+        import("./scripts/arqueos.js")
+          .then((module) => {
+            console.log("Módulo de arqueos cargado");
+            if (window.renderArqueos) {
+              window.renderArqueos();
+            } else {
+              console.error("renderArqueos no está definido en el módulo.");
+            }
+          })
+          .catch((err) => {
+            console.error("Error al cargar arqueos.js:", err);
+            if (errorMessage) {
+              errorMessage.textContent = "Error al cargar funciones de arqueos";
             }
           });
       }
