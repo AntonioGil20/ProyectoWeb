@@ -19,6 +19,9 @@ const firebaseConfig = {
   let mesaSeleccionada = null;
   let pedidos = [];
   const PARA_LLEVAR_ID = "pedido_para_llevar";
+  // Variables globales adicionales
+let productoSeleccionado = null;
+let categoriaSeleccionada = null;
 
   
   // Elementos del DOM
@@ -548,105 +551,231 @@ async function seleccionarMesa(mesa) {
     }
   }
 
-  // Función para mostrar modal de agregar pedido
-  function mostrarModalAgregar() {
+// función mostrarModalAgregar
+function mostrarModalAgregar() {
     modalBody.innerHTML = `
-      <h3>Seleccione una categoría</h3>
-      <div class="categorias-container">
-        <button class="categoria-btn" data-categoria="Tacos">Tacos</button>
-        <button class="categoria-btn" data-categoria="Quesadillas">Quesadillas</button>
-        <button class="categoria-btn" data-categoria="Tostadas">Tostadas</button>
-        <button class="categoria-btn" data-categoria="Bebidas con alcohol">Bebidas con alcohol</button>
-        <button class="categoria-btn" data-categoria="Bebidas sin alcohol">Bebidas sin alcohol</button>
-        <button class="categoria-btn" data-categoria="Postres">Postres</button>
-      </div>
+        <h3>Seleccione una categoría</h3>
+        <div class="categorias-container">
+            <button class="categoria-btn" data-categoria="Alimentos">Alimentos</button>
+            <button class="categoria-btn" data-categoria="Bebidas">Bebidas</button>
+            <button class="categoria-btn" data-categoria="Postres">Postres</button>
+        </div>
     `;
     
     document.querySelectorAll('.categoria-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const categoria = this.getAttribute('data-categoria');
-        mostrarProductos(categoria);
-      });
+        btn.addEventListener('click', async function() {
+            categoriaSeleccionada = this.getAttribute('data-categoria');
+            await mostrarProductos(categoriaSeleccionada);
+        });
     });
     
     modalPedido.style.display = 'flex';
-  }
+    document.getElementById('modal-pedido-footer').style.display = 'none';
+}
 
-  // Función para mostrar productos de una categoría
-  function mostrarProductos(categoria) {
-    const productos = {
-      'Tacos': ['Al pastor', 'Suadero', 'Longaniza', 'Tripa'],
-      'Quesadillas': ['Queso', 'Huitlacoche', 'Flor de calabaza'],
-      'Tostadas': ['Pata', 'Cuerito', 'Oreja'],
-      'Bebidas con alcohol': ['Margarita', 'Michelada', 'Cerveza'],
-      'Bebidas sin alcohol': ['Refresco', 'Agua', 'Jugo'],
-      'Postres': ['Flan', 'Pastel', 'Helado']
-    };
-    
-    modalBody.innerHTML = `
-      <h3>${categoria}</h3>
-      <div class="productos-container">
-        ${productos[categoria].map(prod => `
-          <div class="producto-item">
-            <span>${prod}</span>
-            <button class="btn-agregar-producto" data-producto="${prod}">Agregar</button>
-          </div>
-        `).join('')}
-      </div>
-      <button class="btn-volver" id="btn-volver">Volver</button>
-    `;
-    
-    document.getElementById('btn-volver').addEventListener('click', mostrarModalAgregar);
-    
-    document.querySelectorAll('.btn-agregar-producto').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const producto = this.getAttribute('data-producto');
-        agregarProducto(producto, categoria);
-      });
-    });
-  }
-
-  // Función para agregar un producto a la cuenta
-  async function agregarProducto(nombreProducto, categoria) {
+// Función para mostrar productos de una categoría
+async function mostrarProductos(categoria) {
     showSpinner();
     try {
-      const precios = {
-        'Tacos': { mxn: 15, usd: 0.75 },
-        'Quesadillas': { mxn: 25, usd: 1.25 },
-        'Tostadas': { mxn: 20, usd: 1.00 },
-        'Bebidas con alcohol': { mxn: 50, usd: 2.50 },
-        'Bebidas sin alcohol': { mxn: 20, usd: 1.00 },
-        'Postres': { mxn: 30, usd: 1.50 }
-      };
-      
-      const precio = precios[categoria] || { mxn: 0, usd: 0 };
-      
-      const nuevoPedido = {
-        Cantidad: 1,
-        Producto: nombreProducto,
-        PrecioMx: precio.mxn,
-        PrecioUSD: precio.usd,
-        Mesa: mesaSeleccionada.NombreMesa,
-        Mesero: 'Administrador'
-      };
-      
-      const newRef = database.ref('Cuenta').push();
-      await newRef.set(nuevoPedido);
-      
-      if (mesaSeleccionada.Estado !== 'Ocupada') {
-        await actualizarEstadoMesa(mesaSeleccionada.NombreMesa, 'Ocupada');
-        await cargarMesas();
-      }
-      
-      await cargarPedidos(mesaSeleccionada.NombreMesa);
-      modalPedido.style.display = 'none';
+        let productos = [];
+        let titulo = '';
+        
+        // Obtener y normalizar datos según la categoría
+        if (categoria === 'Alimentos') {
+            const alimentos = await database.ref('Alimentos').once('value');
+            productos = Object.entries(alimentos.val() || {}).map(([id, data]) => ({
+                id,
+                nombre: data.ingrediente || data.Ingrediente || "Sin nombre",
+                categoria: data.tipoPlatillo || data.TipoPlatillo || "Sin categoría",
+                precioMx: data.precioMx || data.PrecioMx || 0,
+                precioUSD: data.precioUSD || data.PrecioUSD || 0
+            }));
+            titulo = 'Alimentos';
+            
+        } else if (categoria === 'Bebidas') {
+            const bebidas = await database.ref('Bebidas').once('value');
+            productos = Object.entries(bebidas.val() || {}).map(([id, data]) => ({
+                id,
+                nombre: data.nombre || data.Nombre || "Sin nombre",
+                categoria: data.tipoBebidas || data.TipoBebidas || "Sin categoría",
+                precioMx: data.precioMx || data.PrecioMx || 0,
+                precioUSD: data.precioUSD || data.PrecioUSD || 0
+            }));
+            titulo = 'Bebidas';
+            
+        } else if (categoria === 'Postres') {
+            const postres = await database.ref('Postres').once('value');
+            productos = Object.entries(postres.val() || {}).map(([id, data]) => ({
+                id,
+                nombre: data.nombre || data.Nombre || "Sin nombre",
+                categoria: "Postre", // Categoría fija para postres
+                precioMx: data.precioMx || data.PrecioMx || 0,
+                precioUSD: data.precioUSD || data.PrecioUSD || 0,
+                stock: data.stock || data.Stock || 0
+            }));
+            titulo = 'Postres';
+        }
+        
+        // Generar HTML para los productos
+modalBody.innerHTML = `
+    <h3>${titulo}</h3>
+    <div class="productos-container">
+        ${productos.map(prod => `
+            <div class="producto-item" data-id="${prod.id}">
+                <div class="producto-info">
+                    ${prod.categoria ? `<p class="producto-categoria">${prod.categoria}</p>` : ''}
+                    <h4>${prod.nombre}</h4>
+                    <p class="producto-precio">$${prod.precioMx.toFixed(2)} MXN</p>
+                    ${prod.stock !== undefined ? `<p class="producto-stock">Disponibles: ${prod.stock}</p>` : ''}
+                </div>
+                <button class="btn-seleccionar" data-id="${prod.id}">Seleccionar</button>
+            </div>
+        `).join('')}
+    </div>
+    <button class="btn-volver" id="btn-volver">Volver</button>
+`;
+        
+        // Configurar eventos
+        document.getElementById('btn-volver').addEventListener('click', mostrarModalAgregar);
+        
+        document.querySelectorAll('.btn-seleccionar').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productoId = this.getAttribute('data-id');
+                seleccionarProducto(productoId, categoria);
+            });
+        });
+        
+        // Configurar secciones adicionales del modal
+        document.getElementById('modal-pedido-footer').style.display = 'block';
+        document.getElementById('ingredientes-container').style.display = 
+            categoria === 'Alimentos' ? 'block' : 'none';
+        
+        if (categoria === 'Alimentos') {
+            await cargarIngredientes();
+        }
+        
     } catch (error) {
-      console.error('Error al agregar producto:', error);
-      alert('Error al agregar el producto');
+        console.error('Error al cargar productos:', error);
+        modalBody.innerHTML = `
+            <p class="error-message">Error al cargar los productos. Intente nuevamente.</p>
+            <button class="btn-reintentar" id="btn-reintentar">Reintentar</button>
+        `;
+        document.getElementById('btn-reintentar').addEventListener('click', () => mostrarProductos(categoria));
     } finally {
-      hideSpinner();
+        hideSpinner();
     }
-  }
+}
+
+
+// Función para cargar ingredientes
+async function cargarIngredientes() {
+    try {
+        const ingredientesSnapshot = await database.ref('Ingredientes').once('value');
+        const ingredientes = Object.values(ingredientesSnapshot.val() || {});
+        
+        const container = document.getElementById('ingredientes-container');
+        container.innerHTML = '<h4>Ingredientes adicionales:</h4>';
+        
+        ingredientes.forEach(ing => {
+            const div = document.createElement('div');
+            div.className = 'ingrediente-option';
+            div.innerHTML = `
+                <input type="checkbox" id="ing-${ing.id || ing.ID}" 
+                       value="${ing.elemento || ing.Elemento}">
+                <label for="ing-${ing.id || ing.ID}">${ing.elemento || ing.Elemento}</label>
+            `;
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error al cargar ingredientes:', error);
+    }
+}
+
+// Función para seleccionar un producto
+function seleccionarProducto(productoId, categoria) {
+    productoSeleccionado = { id: productoId, categoria };
+    // Aquí podrías resaltar el producto seleccionado si lo deseas
+}
+// Modificar el evento del botón confirmar
+document.getElementById('confirmar-pedido').addEventListener('click', async function() {
+    if (!productoSeleccionado || !mesaSeleccionada) return;
+    
+    showSpinner();
+    try {
+        // Obtener detalles del producto
+        const productoSnapshot = await database.ref(productoSeleccionado.categoria)
+            .child(productoSeleccionado.id).once('value');
+        const producto = productoSnapshot.val();
+        
+        // Obtener ingredientes seleccionados (solo para alimentos)
+        let ingredientesSeleccionados = [];
+        if (productoSeleccionado.categoria === 'Alimentos') {
+            const checkboxes = document.querySelectorAll('#ingredientes-container input[type="checkbox"]:checked');
+            ingredientesSeleccionados = Array.from(checkboxes).map(cb => cb.value);
+        }
+        
+        // Obtener cantidad y comentario
+        const cantidad = parseInt(document.getElementById('pedido-cantidad').value) || 1;
+        const comentario = document.getElementById('pedido-comentario').value || '';
+        
+        // Crear objeto de pedido
+        const nuevoPedido = {
+            Producto: producto.nombre || producto.Nombre || producto.ingrediente || producto.Ingrediente,
+            Cantidad: cantidad,
+            PrecioMx: producto.precioMx || producto.PrecioMx || 0,
+            PrecioUSD: producto.precioUSD || producto.PrecioUSD || 0,
+            Mesa: mesaSeleccionada.NombreMesa,
+            Comentario: comentario,
+            Ingredientes: ingredientesSeleccionados.join(', '),
+            Fecha: new Date().toISOString()
+        };
+        
+        // Guardar en Firebase
+        await database.ref('Cuenta').push(nuevoPedido);
+        
+        // Actualizar estado de la mesa si no está ocupada
+        if (mesaSeleccionada.Estado !== 'Ocupada') {
+            await actualizarEstadoMesa(mesaSeleccionada.NombreMesa, 'Ocupada');
+            await cargarMesas();
+        }
+        
+        // Recargar pedidos y cerrar modal
+        await cargarPedidos(mesaSeleccionada.NombreMesa);
+        modalPedido.style.display = 'none';
+        
+    } catch (error) {
+        console.error('Error al agregar pedido:', error);
+        alert('Error al agregar el pedido');
+    } finally {
+        hideSpinner();
+    }
+});
+
+// Modificar la función agregarPedidoALista para mostrar los nuevos campos
+function agregarPedidoALista(pedido) {
+    const pedidoItem = document.createElement('div');
+    pedidoItem.className = 'pedido-item';
+    pedidoItem.dataset.id = pedido.Id;
+    pedidoItem.innerHTML = `
+        <div class="pedido-info">
+            <div class="pedido-cantidad">${pedido.Cantidad}</div>
+            <div class="pedido-nombre">
+                ${pedido.Producto}
+                ${pedido.Comentario ? `<div class="pedido-comentario">${pedido.Comentario}</div>` : ''}
+                ${pedido.Ingredientes ? `<div class="pedido-ingredientes">Ingredientes: ${pedido.Ingredientes}</div>` : ''}
+            </div>
+        </div>
+        <div class="pedido-precio">$${pedido.PrecioMx.toFixed(2)}</div>
+        <button class="btn-eliminar" data-id="${pedido.Id}">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    pedidosContainer.appendChild(pedidoItem);
+    
+    // Agregar evento de eliminación
+    pedidoItem.querySelector('.btn-eliminar').addEventListener('click', eliminarPedido);
+}
+ 
 
   // Función para generar ticket
   async function generarTicket() {

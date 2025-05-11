@@ -51,18 +51,34 @@
     </div>
   </div>
 
-  <!-- Modal para agregar pedido -->
-  <div class="modal" id="modal-pedido">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">Agregar pedido</div>
-        <button class="modal-close" id="modal-close">&times;</button>
+<!-- Modal para agregar pedido -->
+<div class="modal" id="modal-pedido">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-pedido-title">Agregar pedido</div>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Contenido dinámico -->
+    </div>
+    <div class="modal-footer" id="modal-pedido-footer" style="display: none;">
+      <div class="cantidad-container">
+        <label for="pedido-cantidad">Cantidad:</label>
+        <input type="number" id="pedido-cantidad" min="1" value="1">
       </div>
-      <div class="modal-body" id="modal-body">
-        <!-- Contenido dinámico -->
+      <div class="comentario-container">
+        <label for="pedido-comentario">Comentario:</label>
+        <textarea id="pedido-comentario" placeholder="Especificaciones adicionales"></textarea>
       </div>
+      <div id="ingredientes-container" style="display: none;">
+        <h4>Ingredientes adicionales:</h4>
+        <!-- Checkboxes de ingredientes se agregarán aquí dinámicamente -->
+      </div>
+      <button id="confirmar-pedido" class="btn-confirmar">Agregar al pedido</button>
     </div>
   </div>
+</div>
+
 
   <!-- Spinner -->
   <div class="spinner" id="spinner">
