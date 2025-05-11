@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
   // Inicialización de Firebase
 const firebaseConfig = {
@@ -92,6 +93,13 @@ async function cargarMesas() {
           mesasGrid.appendChild(mesaCard);
         }
       }
+            // Hacer las mesas arrastrables
+      document.querySelectorAll('.mesa-card:not(.empty)').forEach(card => {
+        card.setAttribute('draggable', 'true');
+      });
+      
+      // Inicializar drag and drop
+      setupDragAndDrop();
     }
   } catch (error) {
     console.error('Error al cargar mesas:', error);
@@ -101,6 +109,143 @@ async function cargarMesas() {
   }
 }
 
+function setupDragAndDrop() {
+  const mesasGrid = document.getElementById('mesas-grid');
+  let draggedItem = null;
+  let originalPosition = null;
+
+  // Evento cuando comienza el arrastre
+  mesasGrid.addEventListener('dragstart', function(e) {
+    if (e.target.classList.contains('mesa-card') && !e.target.classList.contains('empty')) {
+      draggedItem = e.target;
+      originalPosition = {
+        gridRow: draggedItem.style.gridRow,
+        gridColumn: draggedItem.style.gridColumn
+      };
+      
+      e.target.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', e.target.dataset.nombre);
+      e.dataTransfer.effectAllowed = 'move';
+      
+      // Para Firefox
+      e.dataTransfer.setDragImage(e.target, 0, 0);
+    }
+  });
+
+  // Evento durante el arrastre
+  mesasGrid.addEventListener('drag', function(e) {
+    // Puedes agregar lógica adicional durante el arrastre si es necesario
+  });
+
+  // Evento cuando se entra en una zona de soltar
+  mesasGrid.addEventListener('dragenter', function(e) {
+    if (e.target.classList.contains('mesa-card') || e.target.classList.contains('mesas-grid')) {
+      e.preventDefault();
+      if (e.target !== draggedItem) {
+        e.target.classList.add('dropzone');
+      }
+    }
+  });
+
+  // Evento cuando se sale de una zona de soltar
+  mesasGrid.addEventListener('dragleave', function(e) {
+    if (e.target.classList.contains('mesa-card')) {
+      e.target.classList.remove('dropzone');
+    }
+  });
+
+  // Evento cuando se está sobre una zona de soltar
+  mesasGrid.addEventListener('dragover', function(e) {
+    if (e.target.classList.contains('mesa-card') || e.target.classList.contains('mesas-grid')) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+  });
+
+  // Evento cuando se suelta el elemento
+  mesasGrid.addEventListener('drop', async function(e) {
+    e.preventDefault();
+    if (!draggedItem) return;
+
+    const targetMesa = e.target.closest('.mesa-card');
+    if (!targetMesa || targetMesa === draggedItem) {
+      resetDragState();
+      return;
+    }
+
+    // Intercambiar posiciones
+    const tempRow = targetMesa.style.gridRow;
+    const tempCol = targetMesa.style.gridColumn;
+    
+    targetMesa.style.gridRow = originalPosition.gridRow;
+    targetMesa.style.gridColumn = originalPosition.gridColumn;
+    
+    draggedItem.style.gridRow = tempRow;
+    draggedItem.style.gridColumn = tempCol;
+
+    // Actualizar posiciones en Firebase
+    try {
+      await updateMesaPositions(draggedItem, targetMesa);
+    } catch (error) {
+      console.error('Error al actualizar posiciones:', error);
+      // Revertir cambios visuales si falla la actualización
+      draggedItem.style.gridRow = originalPosition.gridRow;
+      draggedItem.style.gridColumn = originalPosition.gridColumn;
+      targetMesa.style.gridRow = tempRow;
+      targetMesa.style.gridColumn = tempCol;
+    }
+
+    resetDragState();
+  });
+
+  // Evento cuando termina el arrastre (incluso si no se soltó en un lugar válido)
+  mesasGrid.addEventListener('dragend', function() {
+    resetDragState();
+  });
+
+  function resetDragState() {
+    if (draggedItem) {
+      draggedItem.classList.remove('dragging');
+      draggedItem = null;
+    }
+    
+    document.querySelectorAll('.mesa-card').forEach(card => {
+      card.classList.remove('dropzone');
+    });
+  }
+
+  async function updateMesaPositions(mesa1, mesa2) {
+    showSpinner();
+    try {
+      // Obtener datos actuales de Firebase
+      const snapshot = await database.ref('Mesas').once('value');
+      const mesas = snapshot.val();
+      
+      // Encontrar las mesas en los datos
+      const mesa1Data = Object.values(mesas).find(m => m.NombreMesa === mesa1.dataset.nombre);
+      const mesa2Data = Object.values(mesas).find(m => m.NombreMesa === mesa2.dataset.nombre);
+      
+      if (!mesa1Data || !mesa2Data) {
+        throw new Error('No se encontraron los datos de las mesas');
+      }
+      
+      // Obtener las keys de Firebase
+      const mesa1Key = Object.keys(mesas).find(key => mesas[key].NombreMesa === mesa1.dataset.nombre);
+      const mesa2Key = Object.keys(mesas).find(key => mesas[key].NombreMesa === mesa2.dataset.nombre);
+      
+      // Intercambiar posiciones en Firebase
+      const updates = {};
+      updates[`Mesas/${mesa1Key}/Fila`] = parseInt(mesa2.style.gridRow) - 1;
+      updates[`Mesas/${mesa1Key}/Columna`] = parseInt(mesa2.style.gridColumn) - 1;
+      updates[`Mesas/${mesa2Key}/Fila`] = parseInt(mesa1.style.gridRow) - 1;
+      updates[`Mesas/${mesa2Key}/Columna`] = parseInt(mesa1.style.gridColumn) - 1;
+      
+      await database.ref().update(updates);
+    } finally {
+      hideSpinner();
+    }
+  }
+}
 
   // Función para obtener la clase CSS según el estado
   function getEstadoClass(estado) {

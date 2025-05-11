@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas de arqueos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js">
+    <style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 50px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 10px 0 0 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 20px 0 0 0;
+}
+
+.description {
+    margin: 5px 0 0 0;
+    color: #333;
+}
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 50px;
+    margin: 20px 0 50px 0;
+    justify-content: center;
+}
+
+.date-filter {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-picker {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    height: 44px;
+    box-sizing: border-box;
+}
+
+.search-button {
+    background-color: #201D1E;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 44px;
+    align-self: center;
+}
+
+.activity-indicator {
+    display: none;
+    align-items: center;
+    margin: 15px 0 0 0;
+}
+
+.spinner {
+    border: 3px solid rgba(32, 29, 30, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid #201D1E;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.no-results {
+    display: none;
+    background-color: indianred;
+    color: white;
+    padding: 5px 40px;
+    text-align: center;
+    margin: 0 auto;
+    border-radius: 4px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button">
+            <img src="/images/leftarrow.png" alt="Volver" width="30" height="30" onclick="window.cargarVista('arqueos')">
+        </button>
+        
+        <h1>Estadísticas de arqueos</h1>
+        <p class="description">Selecciona una fecha de inicio y una fecha final para visualizar las estadísticas de arqueos dentro de ese plazo</p>
+        <p class="description">Las fechas de los arqueos mostrados corresponden a la fecha de cierre de cada uno</p>
+        
+        <div class="filter-container">
+            <div class="date-filter">
+                <label>Fecha de inicio</label>
+                <input type="date" id="dtpFiltroInicio" class="date-picker">
+            </div>
+            
+            <div class="date-filter">
+                <label>Fecha final</label>
+                <input type="date" id="dtpFiltroFinal" class="date-picker">
+            </div>
+            
+            <button id="btnFiltrar" class="search-button">Buscar</button>
+            
+            <div id="processor" class="activity-indicator">
+                <div class="spinner"></div>
+            </div>
+        </div>
+        
+        <div id="lblNoResults" class="no-results">
+            Sin resultados
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="tablaArqueos"></canvas>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del DOM
+    const backButton = document.querySelector('.back-button');
+    const dtpFiltroInicio = document.getElementById('dtpFiltroInicio');
+    const dtpFiltroFinal = document.getElementById('dtpFiltroFinal');
+    const btnFiltrar = document.getElementById('btnFiltrar');
+    const processor = document.getElementById('processor');
+    const lblNoResults = document.getElementById('lblNoResults');
+    
+    // Configuración inicial del gráfico (usando Chart.js)
+    const ctx = document.getElementById('tablaArqueos').getContext('2d');
+    let chart = new Chart(ctx, {
+        type: 'bar', // o 'line' según prefieras
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Arqueos',
+                data: [],
+                backgroundColor: 'rgba(32, 29, 30, 0.7)',
+                borderColor: 'rgba(32, 29, 30, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Event listeners
+    backButton.addEventListener('click', function() {
+        // Simular navegación hacia atrás
+        window.history.back();
+    });
+    
+    btnFiltrar.addEventListener('click', function() {
+        const fechaInicio = dtpFiltroInicio.value;
+        const fechaFinal = dtpFiltroFinal.value;
+        
+        if (!fechaInicio || !fechaFinal) {
+            alert('Por favor selecciona ambas fechas');
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        processor.style.display = 'flex';
+        lblNoResults.style.display = 'none';
+        
+        // Simular llamada a API (reemplazar con tu lógica real)
+        setTimeout(function() {
+            // Ocultar indicador de carga
+            processor.style.display = 'none';
+            
+            // Simular datos de respuesta
+            const hasData = Math.random() > 0.3; // 70% de probabilidad de tener datos
+            
+            if (hasData) {
+                // Actualizar gráfico con datos simulados
+                const labels = generarFechasEntre(fechaInicio, fechaFinal);
+                const data = labels.map(() => Math.floor(Math.random() * 1000) + 100);
+                
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = data;
+                chart.update();
+            } else {
+                // Mostrar mensaje de no resultados
+                lblNoResults.style.display = 'block';
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+            }
+        }, 1500);
+    });
+    
+    // Función auxiliar para generar fechas entre un rango
+    function generarFechasEntre(inicio, fin) {
+        const start = new Date(inicio);
+        const end = new Date(fin);
+        const dates = [];
+        
+        while (start <= end) {
+            dates.push(new Date(start).toLocaleDateString());
+            start.setDate(start.getDate() + 1);
+        }
+        
+        return dates;
+    }
+});
+    </script>
+</body>
+</html>

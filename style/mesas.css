@@ -65,6 +65,21 @@ body {
       background-color: #fb0000; /* Rojo para ocupada */
 
 }
+/* Estilos para el drag & drop */
+.mesa-card.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.mesa-card.dropzone {
+  border: 2px dashed #1976D2;
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+.mesas-grid {
+  position: relative; /* Necesario para posicionar elementos arrastrados */
+}
 
 .mesa-card.fuera-servicio {
   background-color: #FB8C00; /* Naranja para fuera de servicio */
