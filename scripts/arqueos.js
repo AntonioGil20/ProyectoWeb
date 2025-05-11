@@ -7,9 +7,8 @@ const XLSX = window.XLSX;
 
 console.log("Arqueos.js cargado"); // Depuración
 
-// Lista de arqueos para mantener el estado de selección y el arqueo seleccionado
+// Lista de arqueos para mantener el estado de selección
 let arqueos = [];
-let selectedArqueoId = null;
 
 // Renderizar lista de arqueos
 async function renderArqueos(retryCount = 0) {
@@ -74,15 +73,10 @@ async function renderArqueos(retryCount = 0) {
         arqueo.id
       }', this.checked)"></div>
             `;
-      // Añadir evento de clic para mostrar detalles
-      card.addEventListener("click", () => showArqueoDetails(arqueo.id));
       arqueoList.appendChild(card);
     });
 
     updateBulkActions();
-    if (selectedArqueoId) {
-      showArqueoDetails(selectedArqueoId);
-    }
   } catch (error) {
     console.error("Error en renderArqueos:", error);
     const statusLabel = document.getElementById("statusLabel");
@@ -108,10 +102,8 @@ function filterArqueos() {
 // Mostrar formulario para nuevo arqueo
 function showNewArqueoForm() {
   const form = document.getElementById("newArqueoForm");
-  const details = document.getElementById("arqueoDetails");
-  if (form && details) {
+  if (form) {
     form.style.display = "flex";
-    details.style.display = "none";
     // Establecer valores por defecto
     const today = new Date();
     document.getElementById("fechaInicio").value = today
@@ -131,10 +123,8 @@ function showNewArqueoForm() {
 // Ocultar formulario para nuevo arqueo
 function hideNewArqueoForm() {
   const form = document.getElementById("newArqueoForm");
-  const details = document.getElementById("arqueoDetails");
-  if (form && details) {
+  if (form) {
     form.style.display = "none";
-    details.style.display = "flex";
   }
 }
 
@@ -167,7 +157,7 @@ async function saveArqueo() {
 
   const arqueo = new Arqueo({
     fechaHoraInicio: fechaInicio,
-    fechaHoraCierre: fechaInicio,
+    fechaHoraCierre: fechaInicio, // Por ahora, la fecha de cierre será la misma (se puede actualizar después)
     montoInicial,
     estado: "En proceso",
   });
@@ -257,8 +247,6 @@ async function deleteSelectedArqueos() {
       await ArqueoService.deleteArqueo(arqueo.id);
     }
     await renderArqueos();
-    selectedArqueoId = null; // Limpiar selección de detalles
-    showArqueoDetails(null); // Ocultar detalles
   }
 }
 
@@ -295,85 +283,6 @@ function generateExcel() {
 
   // Descargar el archivo Excel
   XLSX.writeFile(workbook, "Arqueos.xlsx");
-}
-
-// Mostrar detalles de un arqueo
-function showArqueoDetails(id) {
-  const details = document.getElementById("arqueoDetails");
-  const form = document.getElementById("newArqueoForm");
-  if (details && form) {
-    if (id) {
-      const arqueo = arqueos.find((a) => a.id === id);
-      if (arqueo) {
-        selectedArqueoId = id;
-        document.getElementById("arqueoId").textContent = arqueo.id;
-        document.getElementById("detailApertura").textContent = new Date(
-          arqueo.fechaHoraInicio
-        ).toLocaleString("es-MX");
-        document.getElementById("detailEstado").textContent = arqueo.estado;
-        document.getElementById(
-          "detailMontoInicial"
-        ).textContent = `$${arqueo.montoInicial.toFixed(2)}`;
-        document.getElementById(
-          "detailSistemaMXN"
-        ).textContent = `$${arqueo.ingresosSistemaMXN.toFixed(2)}`;
-        document.getElementById(
-          "detailUsuarioMXN"
-        ).textContent = `$${arqueo.ingresosUsuarioMXN.toFixed(2)}`;
-        document.getElementById(
-          "detailDiferenciaMXN"
-        ).textContent = `$${arqueo.diferenciaMXN.toFixed(2)}`;
-        details.style.display = "flex";
-        form.style.display = "none";
-      }
-    } else {
-      selectedArqueoId = null;
-      details.style.display = "none";
-    }
-  }
-}
-
-// Terminar un arqueo
-async function terminateArqueo() {
-  if (selectedArqueoId) {
-    const arqueo = arqueos.find((a) => a.id === selectedArqueoId);
-    if (arqueo && arqueo.estado === "En proceso") {
-      const fechaCierre = new Date();
-      arqueo.estado = "Terminado";
-      arqueo.fechaHoraCierre = fechaCierre;
-      // Calcular diferencias (esto debería integrarse con ventas más adelante)
-      arqueo.diferenciaMXN =
-        arqueo.ingresosUsuarioMXN - arqueo.ingresosSistemaMXN;
-      arqueo.diferenciaUSD =
-        arqueo.ingresosUsuarioUSD - arqueo.ingresosSistemaUSD;
-
-      try {
-        await ArqueoService.updateArqueo(selectedArqueoId, arqueo);
-        const statusLabel = document.getElementById("statusLabel");
-        if (statusLabel) {
-          statusLabel.textContent = "Arqueo terminado correctamente.";
-          statusLabel.style.color = "darkgreen";
-          statusLabel.style.display = "block";
-        }
-        await renderArqueos();
-      } catch (error) {
-        console.error("Error al terminar el arqueo:", error);
-        const statusLabel = document.getElementById("statusLabel");
-        if (statusLabel) {
-          statusLabel.textContent = "Error al terminar el arqueo.";
-          statusLabel.style.color = "darkred";
-          statusLabel.style.display = "block";
-        }
-      }
-    } else {
-      alert("Este arqueo ya está terminado o no existe.");
-    }
-  }
-}
-
-// Revisar ventas (placeholder)
-function reviewSales() {
-  alert("Funcionalidad 'Revisar Ventas' en desarrollo.");
 }
 
 // Exponer funciones al ámbito global para eventos onclick
