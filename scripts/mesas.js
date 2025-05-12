@@ -580,13 +580,11 @@ async function mostrarProductos(categoria) {
         let productos = [];
         let titulo = '';
         
-        // Obtener y normalizar datos según la categoría
         if (categoria === 'Alimentos') {
             const alimentos = await database.ref('Alimentos').once('value');
             productos = Object.entries(alimentos.val() || {}).map(([id, data]) => ({
                 id,
-                nombre: data.ingrediente || data.Ingrediente || "Sin nombre",
-                categoria: data.tipoPlatillo || data.TipoPlatillo || "Sin categoría",
+                nombre: `${data.tipoPlatillo || data.TipoPlatillo || "Alimento"} ${data.ingrediente || data.Ingrediente || ""}`.trim(),
                 precioMx: data.precioMx || data.PrecioMx || 0,
                 precioUSD: data.precioUSD || data.PrecioUSD || 0
             }));
@@ -617,16 +615,16 @@ async function mostrarProductos(categoria) {
         }
         
         // Generar HTML para los productos
+// En la función mostrarProductos, actualiza el HTML generado:
 modalBody.innerHTML = `
     <h3>${titulo}</h3>
     <div class="productos-container">
         ${productos.map(prod => `
             <div class="producto-item" data-id="${prod.id}">
-                <div class="producto-info">
-                    ${prod.categoria ? `<p class="producto-categoria">${prod.categoria}</p>` : ''}
-                    <h4>${prod.nombre}</h4>
+                <div class="producto-info ${categoria === 'Alimentos' ? 'alimento' : ''}">
+                    <h4 class="producto-nombre">${prod.nombre}</h4>
                     <p class="producto-precio">$${prod.precioMx.toFixed(2)} MXN</p>
-                    ${prod.stock !== undefined ? `<p class="producto-stock">Disponibles: ${prod.stock}</p>` : ''}
+                    ${prod.stock !== undefined ? `<p class="producto-stock">${prod.stock} disp.</p>` : ''}
                 </div>
                 <button class="btn-seleccionar" data-id="${prod.id}">Seleccionar</button>
             </div>
@@ -640,8 +638,25 @@ modalBody.innerHTML = `
         
         document.querySelectorAll('.btn-seleccionar').forEach(btn => {
             btn.addEventListener('click', function() {
+                // Remover selección previa
+                document.querySelectorAll('.producto-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // Marcar como seleccionado
+                const productoItem = this.closest('.producto-item');
+                productoItem.classList.add('selected');
+                
                 const productoId = this.getAttribute('data-id');
                 seleccionarProducto(productoId, categoria);
+                
+                // Mostrar producto seleccionado en el footer
+                const productoNombre = productoItem.querySelector('.producto-nombre').textContent;
+                const productoPrecio = productoItem.querySelector('.producto-precio').textContent;
+                
+                document.getElementById('producto-seleccionado').style.display = 'flex';
+                document.querySelector('.selected-product-name').textContent = productoNombre;
+                document.querySelector('.selected-product-price').textContent = productoPrecio;
             });
         });
         
@@ -649,6 +664,7 @@ modalBody.innerHTML = `
         document.getElementById('modal-pedido-footer').style.display = 'block';
         document.getElementById('ingredientes-container').style.display = 
             categoria === 'Alimentos' ? 'block' : 'none';
+        document.getElementById('producto-seleccionado').style.display = 'none';
         
         if (categoria === 'Alimentos') {
             await cargarIngredientes();
@@ -667,14 +683,14 @@ modalBody.innerHTML = `
 }
 
 
-// Función para cargar ingredientes
+// Función para cargar ingredientes (modificada para 3 columnas)
 async function cargarIngredientes() {
     try {
         const ingredientesSnapshot = await database.ref('Ingredientes').once('value');
         const ingredientes = Object.values(ingredientesSnapshot.val() || {});
         
-        const container = document.getElementById('ingredientes-container');
-        container.innerHTML = '<h4>Ingredientes adicionales:</h4>';
+        const container = document.querySelector('.ingredientes-grid');
+        container.innerHTML = '';
         
         ingredientes.forEach(ing => {
             const div = document.createElement('div');

@@ -63,17 +63,31 @@
     </div>
     <div class="modal-footer" id="modal-pedido-footer" style="display: none;">
       <div class="cantidad-container">
-        <label for="pedido-cantidad">Cantidad:</label>
-        <input type="number" id="pedido-cantidad" min="1" value="1">
+        <div class="cantidad-header">
+          <label for="pedido-cantidad">Cantidad:</label>
+          <input type="number" id="pedido-cantidad" min="1" value="1">
+        </div>
       </div>
+      
+      <div id="ingredientes-container" style="display: none;">
+        <h4>Ingredientes adicionales:</h4>
+        <div class="ingredientes-grid">
+          <!-- Checkboxes de ingredientes se agregarán aquí dinámicamente -->
+        </div>
+      </div>
+      
       <div class="comentario-container">
         <label for="pedido-comentario">Comentario:</label>
         <textarea id="pedido-comentario" placeholder="Especificaciones adicionales"></textarea>
       </div>
-      <div id="ingredientes-container" style="display: none;">
-        <h4>Ingredientes adicionales:</h4>
-        <!-- Checkboxes de ingredientes se agregarán aquí dinámicamente -->
+      
+      <div class="producto-seleccionado" id="producto-seleccionado" style="display: none;">
+        <div class="selected-product-info">
+          <span class="selected-product-name"></span>
+          <span class="selected-product-price"></span>
+        </div>
       </div>
+      
       <button id="confirmar-pedido" class="btn-confirmar">Agregar al pedido</button>
     </div>
   </div>

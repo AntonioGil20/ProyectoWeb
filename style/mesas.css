@@ -126,7 +126,7 @@ body {
 
 /* Panel de cuenta */
 .cuenta-panel {
-  width: 450px;
+  width: 600px;
   background-color: white;
   border-left: 1px solid #e0e0e0;
   display: flex;
@@ -290,9 +290,13 @@ body {
   padding: 15px;
 }
 .modal-footer {
-  padding: 15px;
-  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
+
+
+
 .cantidad-container, .comentario-container {
   margin-bottom: 15px;
 }
@@ -301,29 +305,59 @@ body {
   padding: 8px;
   margin-left: 10px;
 }
-
-.comentario-container textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  min-height: 60px;
-  resize: vertical;
+.cantidad-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.cantidad-header label {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
+.cantidad-header input {
+  width: 80px;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  border: 2px solid #1976D2;
+  border-radius: 5px;
+}
+.comentario-container {
+  order: 3; /* Mover comentario al final */
+  padding: 20px;
+}
+.comentario-container textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  min-height: 80px;
+  resize: vertical;
+}
 #ingredientes-container {
-  margin: 15px 0;
+  margin: 15px 20px;
+}
+
+.ingredientes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 .ingrediente-option {
   display: flex;
   align-items: center;
-  margin: 5px 0;
+  padding: 5px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
 }
 
 .ingrediente-option input {
-  margin-right: 10px;
+  margin-right: 8px;
 }
-
 .btn-confirmar {
   background-color: #4CAF50;
   color: white;
@@ -331,7 +365,13 @@ body {
   padding: 10px 15px;
   border-radius: 4px;
   cursor: pointer;
-  width: 100%;
+  width: 50%; /* Mantienes el ancho al 50% como tenías */
+  display: block; /* Cambia a bloque para poder centrarlo */
+  margin: 0 auto; /* Centrado horizontal automático */
+  text-align: center; /* Centrado del texto interno */
+  transition: background-color 0.3s ease; /* Transición suave para el hover */
+  margin-bottom: 10px;
+
 }
 
 .btn-confirmar:hover {
@@ -344,20 +384,49 @@ body {
     font-style: italic;
     margin: 3px 0;
 }
-/* Estilos para la visualización de productos */
-.producto-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+/* Estilos para productos en alimentos (categoría + ingrediente juntos) */
+.producto-info.alimento .producto-nombre {
+  font-weight: bold;
+  font-size: 16px;
 }
-
+.producto-info.alimento .producto-categoria {
+  display: none; /* Ocultamos la categoría por separado */
+}
+/* Resaltar producto seleccionado */
+.producto-item.selected {
+  background-color: #e3f2fd;
+  border-left: 4px solid #1976D2;
+}
+/* Estilos para la visualización de productos */
+/* Nuevos estilos para el contenedor de productos */
+.productos-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual ancho */
+  gap: 12px; /* Espacio entre elementos */
+  padding: 10px 0;
+}
+.producto-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+  transition: all 0.2s ease;
+  min-height: 110px; /* Altura mínima consistente */
+}
+.producto-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
 .producto-info h4 {
     margin: 0 0 5px 0;
     color: #666;
 }
-
+.producto-info {
+  flex: 1;
+}
 .producto-categoria h4 {
     margin: 0 0 5px 0;
     color: #666;
@@ -375,7 +444,28 @@ body {
     font-size: 0.8em;
     color: #5b9e48;
 }
+.producto-seleccionado {
+  background-color: #e8f5e9;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.selected-product-info {
+  display: flex;
+  flex-direction: column;
+}
+.selected-product-name {
+  font-weight: bold;
+  font-size: 16px;
+}
 
+.selected-product-price {
+  color: #2a6496;
+  font-weight: bold;
+}
 .error-message {
     color: #d9534f;
     text-align: center;
@@ -391,7 +481,20 @@ body {
     border-radius: 4px;
 }
 
+.btn-seleccionar {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #1976D2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-end;
+}
 
+.btn-seleccionar:hover {
+  background-color: #1565C0;
+}
 .categorias-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
