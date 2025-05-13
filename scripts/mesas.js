@@ -455,14 +455,14 @@ async function seleccionarMesa(mesa) {
     });
   }
 
-  // Función para calcular totales
-  function calcularTotales() {
-    const totalMxn = pedidos.reduce((sum, pedido) => sum + (pedido.PrecioMx * pedido.Cantidad), 0);
-    const totalUsd = pedidos.reduce((sum, pedido) => sum + (pedido.PrecioUSD * pedido.Cantidad), 0);
+// Función para calcular totales 
+function calcularTotales() {
+    const totalMxn = pedidos.reduce((sum, pedido) => sum + (pedido.PrecioMx), 0);
+    const totalUsd = pedidos.reduce((sum, pedido) => sum + (pedido.PrecioUSD), 0);
     
     totalMxnElement.textContent = `$${totalMxn.toFixed(2)}`;
     totalUsdElement.textContent = `$${totalUsd.toFixed(2)}`;
-  }
+}
 
   async function actualizarEstadoMesa(nombreMesa, nuevoEstado) {
     try {
@@ -491,65 +491,172 @@ async function seleccionarMesa(mesa) {
   }
 
   // Función para pagar la cuenta
-  async function pagarCuenta() {
-
-  if (mesaSeleccionada?.EsParaLlevar) {
-    if (confirm("¿Confirmar pedido para llevar?")) {
-      showSpinner();
-      try {
-        // Elimina pedidos como en el pago normal
-        const deletePromises = pedidos.map(pedido => 
-          database.ref(`Cuenta/${pedido.Id}`).remove()
-        );
-        await Promise.all(deletePromises);
-        
-        // Restablece la UI
-        pedidos = [];
-        pedidosContainer.innerHTML = '<div class="empty-state">Pedido completado</div>';
-        calcularTotales();
-        alert('Pedido para llevar listo');
-      } finally {
-        hideSpinner();
-      }
-    }
-    return;
-  }
-
+async function pagarCuenta() {
     if (!mesaSeleccionada || pedidos.length === 0) return;
     
     const confirmar = confirm(`¿Confirmar pago de la cuenta para ${mesaSeleccionada.NombreMesa}?`);
     
     if (confirmar) {
-      showSpinner();
-      try {
-        const conTarjeta = confirm('¿El pago es con tarjeta?');
-        
-        const deletePromises = pedidos.map(pedido => 
-          database.ref(`Cuenta/${pedido.Id}`).remove()
-        );
-        
-        await Promise.all(deletePromises);
-        await actualizarEstadoMesa(mesaSeleccionada.NombreMesa, 'Libre');
-        
-        pedidos = [];
-        pedidosContainer.innerHTML = '<div class="empty-state">Cuenta pagada</div>';
-        totalMxnElement.textContent = '$0.00';
-        totalUsdElement.textContent = '$0.00';
-        
-        btnPagar.disabled = true;
-        btnAgregar.disabled = true;
-        btnTicket.disabled = true;
-        
-        await cargarMesas();
-        alert('Ticket generado (simulado)');
-      } catch (error) {
-        console.error('Error al pagar cuenta:', error);
-        alert('Error al procesar el pago');
-      } finally {
-        hideSpinner();
-      }
+        showSpinner();
+        try {
+            // Generar el ticket antes de eliminar los pedidos
+            const ticketContent = generarTicketContent();
+            
+            // Abrir el ticket en una nueva ventana
+            const ticketWindow = window.open('', '_blank', 'width=400,height=600');
+            ticketWindow.document.write(ticketContent);
+            
+            const conTarjeta = confirm('¿El pago es con tarjeta?');
+            const metodoPago = conTarjeta ? 'Tarjeta' : 'Efectivo';
+            
+            // Registrar el pago en Firebase (opcional)
+            await registrarPago(metodoPago);
+            
+            // Eliminar los pedidos
+            const deletePromises = pedidos.map(pedido => 
+                database.ref(`Cuenta/${pedido.Id}`).remove()
+            );
+            
+            await Promise.all(deletePromises);
+            await actualizarEstadoMesa(mesaSeleccionada.NombreMesa, 'Libre');
+            
+            // Limpiar la UI
+            pedidos = [];
+            pedidosContainer.innerHTML = '<div class="empty-state">Cuenta pagada</div>';
+            totalMxnElement.textContent = '$0.00';
+            totalUsdElement.textContent = '$0.00';
+            
+            btnPagar.disabled = true;
+            btnAgregar.disabled = true;
+            btnTicket.disabled = true;
+            
+            await cargarMesas();
+        } catch (error) {
+            console.error('Error al pagar cuenta:', error);
+            alert('Error al procesar el pago');
+        } finally {
+            hideSpinner();
+        }
     }
-  }
+}
+// Función para registrar el pago en Firebase (opcional)
+async function registrarPago(metodoPago) {
+    const pagoData = {
+        mesa: mesaSeleccionada.NombreMesa,
+        total: parseFloat(totalMxnElement.textContent.replace('$', '')),
+        fecha: new Date().toISOString(),
+        metodoPago: metodoPago,
+        pedidos: pedidos.map(p => ({
+            producto: p.Producto,
+            cantidad: p.Cantidad,
+            precio: p.PrecioMx
+        }))
+    };
+    
+    await database.ref('Pagos').push(pagoData);
+}
+// Función para generar el contenido HTML del ticket
+function generarTicketContent() {
+    const now = new Date();
+    const fecha = now.toLocaleDateString('es-MX');
+    const hora = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const total = totalMxnElement.textContent;
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Ticket ${mesaSeleccionada.NombreMesa}</title>
+            <meta charset="UTF-8">
+            <style>
+                body { 
+                    font-family: 'Courier New', monospace; 
+                    font-size: 14px; 
+                    margin: 0; 
+                    padding: 10px; 
+                }
+                .ticket { 
+                    width: 100%; 
+                    max-width: 300px; 
+                    margin: 0 auto; 
+                }
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 10px; 
+                }
+                .title { 
+                    font-weight: bold; 
+                    font-size: 18px; 
+                    margin-bottom: 5px; 
+                }
+                .divider { 
+                    border-top: 1px dashed #000; 
+                    margin: 10px 0; 
+                }
+                .item { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    margin-bottom: 5px; 
+                }
+                .item-name { 
+                    flex: 2; 
+                }
+                .item-price { 
+                    flex: 1; 
+                    text-align: right; 
+                }
+                .total { 
+                    font-weight: bold; 
+                    margin-top: 10px; 
+                    text-align: right; 
+                }
+                .footer { 
+                    text-align: center; 
+                    margin-top: 20px; 
+                    font-size: 10px; 
+                }
+                .mesa-info { 
+                    margin-bottom: 10px; 
+                    text-align: center; 
+                }
+            </style>
+        </head>
+        <body>
+            <div class="ticket">
+                <div class="header">
+                    <div class="title">TACOS & PAPAS</div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="mesa-info">
+                    <div>${mesaSeleccionada.EsParaLlevar ? 'PARA LLEVAR' : 'MESA: ' + mesaSeleccionada.NombreMesa}</div>
+                    <div>${fecha} ${hora}</div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                ${pedidos.map(pedido => `
+                    <div class="item">
+                        <div class="item-name">${pedido.Cantidad} ${pedido.Producto}</div>
+                        <div class="item-price">$${pedido.PrecioMx.toFixed(2)}</div>
+                    </div>
+                `).join('')}
+                
+                <div class="divider"></div>
+                
+                <div class="total">TOTAL: ${total}</div>
+                
+                <div class="divider"></div>
+                
+                <div class="footer">
+                    <div>¡Gracias por su preferencia!</div>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+}
 
 // función mostrarModalAgregar
 function mostrarModalAgregar() {
@@ -580,17 +687,18 @@ async function mostrarProductos(categoria) {
         let productos = [];
         let titulo = '';
         
-        if (categoria === 'Alimentos') {
-            const alimentos = await database.ref('Alimentos').once('value');
-            productos = Object.entries(alimentos.val() || {}).map(([id, data]) => ({
-                id,
-                nombre: `${data.tipoPlatillo || data.TipoPlatillo || "Alimento"} ${data.ingrediente || data.Ingrediente || ""}`.trim(),
-                precioMx: data.precioMx || data.PrecioMx || 0,
-                precioUSD: data.precioUSD || data.PrecioUSD || 0
-            }));
-            titulo = 'Alimentos';
-            
-        } else if (categoria === 'Bebidas') {
+if (categoria === 'Alimentos') {
+    const alimentos = await database.ref('Alimentos').once('value');
+    productos = Object.entries(alimentos.val() || {}).map(([id, data]) => ({
+        id,
+        nombre: `${data.tipoPlatillo || data.TipoPlatillo || "Alimento"} ${data.ingrediente || data.Ingrediente || ""}`.trim(),
+        tipoPlatillo: data.tipoPlatillo || data.TipoPlatillo || "Alimento",
+        ingrediente: data.ingrediente || data.Ingrediente || "",
+        precioMx: data.precioMx || data.PrecioMx || 0,
+        precioUSD: data.precioUSD || data.PrecioUSD || 0
+    }));
+    titulo = 'Alimentos';
+} else if (categoria === 'Bebidas') {
             const bebidas = await database.ref('Bebidas').once('value');
             productos = Object.entries(bebidas.val() || {}).map(([id, data]) => ({
                 id,
@@ -712,6 +820,7 @@ function seleccionarProducto(productoId, categoria) {
     productoSeleccionado = { id: productoId, categoria };
     // Aquí podrías resaltar el producto seleccionado si lo deseas
 }
+
 // Modificar el evento del botón confirmar
 document.getElementById('confirmar-pedido').addEventListener('click', async function() {
     if (!productoSeleccionado || !mesaSeleccionada) return;
@@ -723,6 +832,11 @@ document.getElementById('confirmar-pedido').addEventListener('click', async func
             .child(productoSeleccionado.id).once('value');
         const producto = productoSnapshot.val();
         
+        // Obtener cantidad y calcular precio total
+        const cantidad = parseInt(document.getElementById('pedido-cantidad').value) || 1;
+        const precioUnitario = producto.precioMx || producto.PrecioMx || 0;
+        const precioTotal = cantidad * precioUnitario;
+        
         // Obtener ingredientes seleccionados (solo para alimentos)
         let ingredientesSeleccionados = [];
         if (productoSeleccionado.categoria === 'Alimentos') {
@@ -730,16 +844,17 @@ document.getElementById('confirmar-pedido').addEventListener('click', async func
             ingredientesSeleccionados = Array.from(checkboxes).map(cb => cb.value);
         }
         
-        // Obtener cantidad y comentario
-        const cantidad = parseInt(document.getElementById('pedido-cantidad').value) || 1;
+        // Obtener comentario
         const comentario = document.getElementById('pedido-comentario').value || '';
         
-        // Crear objeto de pedido
+        // Crear objeto de pedido con el precio total
         const nuevoPedido = {
-            Producto: producto.nombre || producto.Nombre || producto.ingrediente || producto.Ingrediente,
-            Cantidad: cantidad,
-            PrecioMx: producto.precioMx || producto.PrecioMx || 0,
-            PrecioUSD: producto.precioUSD || producto.PrecioUSD || 0,
+            Producto: productoSeleccionado.categoria === 'Alimentos' 
+            ? `${producto.tipoPlatillo || producto.TipoPlatillo || "Alimento"} ${producto.ingrediente || producto.Ingrediente || ""}`.trim()
+            : producto.nombre || producto.Nombre || "Sin nombre",            Cantidad: cantidad,
+            PrecioMx: precioTotal, // Aquí usamos el precio total calculado
+            PrecioUnitario: precioUnitario, // Guardamos también el precio unitario por si acaso
+            PrecioUSD: (producto.precioUSD || producto.PrecioUSD || 0) * cantidad, // También para USD
             Mesa: mesaSeleccionada.NombreMesa,
             Comentario: comentario,
             Ingredientes: ingredientesSeleccionados.join(', '),
@@ -774,7 +889,7 @@ function agregarPedidoALista(pedido) {
     pedidoItem.dataset.id = pedido.Id;
     pedidoItem.innerHTML = `
         <div class="pedido-info">
-            <div class="pedido-cantidad">${pedido.Cantidad}</div>
+            <div class="pedido-cantidad">${pedido.Cantidad} x $${(pedido.PrecioUnitario || pedido.PrecioMx / pedido.Cantidad).toFixed(2)}</div>
             <div class="pedido-nombre">
                 ${pedido.Producto}
                 ${pedido.Comentario ? `<div class="pedido-comentario">${pedido.Comentario}</div>` : ''}
@@ -794,19 +909,35 @@ function agregarPedidoALista(pedido) {
  
 
   // Función para generar ticket
-  async function generarTicket() {
-    if (!mesaSeleccionada || pedidos.length === 0) return;
+async function generarTicket() {
+    if (!mesaSeleccionada || pedidos.length === 0) {
+        alert("No hay pedidos para generar ticket");
+        return;
+    }
     
     showSpinner();
     try {
-      alert(`Ticket generado para ${mesaSeleccionada.NombreMesa}\nTotal: ${totalMxnElement.textContent}`);
+        // Generar el contenido del ticket (usando la misma función que en pagar)
+        const ticketContent = generarTicketContent();
+        
+        // Abrir el ticket en una nueva ventana
+        const ticketWindow = window.open('', '_blank', 'width=400,height=600');
+        ticketWindow.document.write(ticketContent);
+        
+        // Opcional: auto-enfoque en la ventana del ticket
+        ticketWindow.focus();
+        
+        // Opcional: auto-impresión (descomentar si lo deseas)
+        // setTimeout(() => { ticketWindow.print(); }, 500);
+        
     } catch (error) {
-      console.error('Error al generar ticket:', error);
-      alert('Error al generar el ticket');
+        console.error('Error al generar ticket:', error);
+        alert('Error al generar el ticket');
     } finally {
-      hideSpinner();
+        hideSpinner();
     }
-  }
+}
+
 
   // Funciones para mostrar/ocultar spinner
   function showSpinner() {

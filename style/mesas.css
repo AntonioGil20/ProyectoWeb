@@ -167,8 +167,16 @@ body {
   font-weight: bold;
 }
 
+/* Para mejorar la visualización de los nombres más largos */
 .pedido-nombre {
-  flex: 1;
+    word-break: break-word;
+    margin-right: 10px;
+}
+
+.item-name {
+    word-break: break-word;
+    flex: 2;
+    padding-right: 10px;
 }
 
 .pedido-precio {
