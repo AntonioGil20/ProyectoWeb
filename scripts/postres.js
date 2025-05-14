@@ -37,21 +37,29 @@ async function renderPostres(retryCount = 0) {
       const card = document.createElement("div");
       card.className = "postre-item";
       card.innerHTML = `
-                <div class="postre-info">
-                    <h3>${postre.nombre}</h3>
-                    <p>Precio MXN: $${postre.precioMx.toFixed(2)}</p>
-                    <p>Precio USD: $${postre.precioUSD.toFixed(2)}</p>
-                    <p>Stock: ${postre.stock}</p>
-                    <div class="acciones">
-                        <button class="editar" onclick="editPostre('${
-                          postre.id
-                        }')">Editar</button>
-                        <button class="eliminar" onclick="deletePostre('${
-                          postre.id
-                        }')">Eliminar</button>
+            <div class="postre-item">
+                <div class="postre-header">
+                    <h4>${postre.nombre}</h4>
+                </div>
+                <div class="postre-precios">
+                    <div class="postre-precio">
+                        <span>Precio MXN:</span>
+                        <span>$${postre.precioMx.toFixed(2)}</span>
+                    </div>
+                    <div class="postre-precio">
+                        <span>Precio USD:</span>
+                        <span>$${postre.precioUSD.toFixed(2)}</span>
                     </div>
                 </div>
-            `;
+                <span class="postre-stock">
+                    <i class="fas fa-box-open"></i> ${postre.stock || 0} en stock
+                </span>
+                <div class="postre-acciones">
+                    <button class="editar"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="eliminar"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                </div>
+            </div>
+        `;
       postresList.appendChild(card);
     });
   } catch (error) {

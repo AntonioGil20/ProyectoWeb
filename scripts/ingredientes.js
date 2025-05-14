@@ -37,14 +37,17 @@ async function renderIngredientes(retryCount = 0) {
       const card = document.createElement("div");
       card.className = "ingrediente-item";
       card.innerHTML = `
-                <div class="ingrediente-info">
-                    <h3>${ingrediente.elemento}</h3>
-                    <div class="acciones">
-                        <button class="editar" onclick="editIngrediente('${ingrediente.id}')">Editar</button>
-                        <button class="eliminar" onclick="deleteIngrediente('${ingrediente.id}')">Eliminar</button>
-                    </div>
+            <div class="ingrediente-item">
+                <div class="ingrediente-header">
+                    <i class="fas fa-pepper-hot"></i>
+                    <h4>${ingrediente.elemento}</h4>
                 </div>
-            `;
+                <div class="ingrediente-acciones">
+                    <button class="editar"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="eliminar"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                </div>
+            </div>
+        `;
       ingredientesList.appendChild(card);
     });
   } catch (error) {

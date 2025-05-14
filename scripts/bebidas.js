@@ -37,21 +37,27 @@ async function renderBebidas(retryCount = 0) {
       const card = document.createElement("div");
       card.className = "bebida-item";
       card.innerHTML = `
-                <div class="bebida-info">
-                    <h3>${bebida.nombre}</h3>
-                    <p>Tipo: ${bebida.tipoBebidas}</p>
-                    <p>Precio MXN: $${bebida.precioMx.toFixed(2)}</p>
-                    <p>Precio USD: $${bebida.precioUSD.toFixed(2)}</p>
-                    <div class="acciones">
-                        <button class="editar" onclick="editBebida('${
-                          bebida.id
-                        }')">Editar</button>
-                        <button class="eliminar" onclick="deleteBebida('${
-                          bebida.id
-                        }')">Eliminar</button>
+            <div class="bebida-item">
+                <div class="bebida-header">
+                    <h4>${bebida.nombre}</h4>
+                    <span class="bebida-tipo">${bebida.tipoBebidas}</span>
+                </div>
+                <div class="bebida-precios">
+                    <div class="bebida-precio">
+                        <span>Precio MXN:</span>
+                        <span>$${bebida.precioMx.toFixed(2)}</span>
+                    </div>
+                    <div class="bebida-precio">
+                        <span>Precio USD:</span>
+                        <span>$${bebida.precioUSD.toFixed(2)}</span>
                     </div>
                 </div>
-            `;
+                <div class="bebida-acciones">
+                    <button class="editar"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="eliminar"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                </div>
+            </div>
+        `;
       bebidasList.appendChild(card);
     });
   } catch (error) {

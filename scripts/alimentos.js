@@ -37,21 +37,30 @@ async function renderAlimentos(retryCount = 0) {
       const card = document.createElement("div");
       card.className = "alimento-item";
       card.innerHTML = `
-                <div class="alimento-info">
-                    <h3>${alimento.ingrediente}</h3>
-                    <p>Categoría: ${alimento.tipoPlatillo}</p>
-                    <p>Precio MXN: $${alimento.precioMx.toFixed(2)}</p>
-                    <p>Precio USD: $${alimento.precioUSD.toFixed(2)}</p>
-                    <div class="acciones">
-                        <button class="editar" onclick="editAlimento('${
-                          alimento.id
-                        }')">Editar</button>
-                        <button class="eliminar" onclick="deleteAlimento('${
-                          alimento.id
-                        }')">Eliminar</button>
-                    </div>
+        <div class="alimento-item">
+            <div class="alimento-header">
+                <h4>${alimento.tipoPlatillo} ${alimento.ingrediente}</h4>
+            </div>
+            <div class="alimento-precios">
+                <div class="alimento-precio">
+                    <span>Precio MXN:</span>
+                    <span>$${alimento.precioMx.toFixed(2)}</span>
                 </div>
-            `;
+                <div class="alimento-precio">
+                    <span>Precio USD:</span>
+                    <span>$${alimento.precioUSD.toFixed(2)}</span>
+                </div>
+            </div>
+            <div class="alimento-acciones">
+                <button class="editar" onclick="editarAlimento('${alimento.id}')">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="eliminar" onclick="eliminarAlimento('${alimento.id}')">
+                    <i class="fas fa-trash-alt"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    `;
       alimentosList.appendChild(card);
     });
   } catch (error) {
