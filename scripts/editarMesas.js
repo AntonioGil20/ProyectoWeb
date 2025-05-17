@@ -71,21 +71,30 @@ mesas.forEach((mesa) => {
 }
 
 // Filtrar mesas por nombre
+// Función mejorada para filtrar mesas con búsqueda instantánea
 function filterMesas() {
-  const searchInput = document.querySelector(".search-bar input");
-  if (!searchInput) {
-    console.error("Input de búsqueda no encontrado.");
-    return;
-  }
-  const searchTerm = searchInput.value.toLowerCase();
-  const mesasList = document.getElementById("mesas-list");
-  const cards = mesasList.getElementsByClassName("mesa-card");
+    const searchInput = document.querySelector('.search-box');
+    const searchTerm = searchInput.value.toLowerCase();
+    const mesasList = document.getElementById('mesas-list');
+    const cards = mesasList.getElementsByClassName('mesa-card');
 
-  Array.from(cards).forEach((card) => {
-    const name = card.querySelector("h3").textContent.toLowerCase();
-    card.style.display = name.includes(searchTerm) ? "flex" : "none";
-  });
+    Array.from(cards).forEach(card => {
+        const nombre = card.querySelector('h3').textContent.toLowerCase();
+        const estado = card.querySelector('p:nth-of-type(1)').textContent.toLowerCase();
+        const posicion = card.querySelector('p:nth-of-type(2)').textContent.toLowerCase();
+        
+        // Coincidencia en nombre, estado o posición
+        const coincide = nombre.includes(searchTerm) || 
+                        estado.includes(searchTerm) || 
+                        posicion.includes(searchTerm);
+        
+        card.style.display = coincide ? 'flex' : 'none';
+    });
 }
+
+// Asignar evento para filtrado instantáneo
+document.querySelector('.search-box').addEventListener('input', filterMesas);
+
 
 // Registrar o actualizar una mesa
 async function registerMesa() {

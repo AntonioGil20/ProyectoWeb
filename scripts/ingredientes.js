@@ -80,22 +80,21 @@ ingredientes.forEach((ingrediente) => {
 
 // Filtrar ingredientes por nombre
 function filterIngredientes() {
-  const filtroNombre = document
-    .getElementById("filtroNombre")
-    .value.toLowerCase();
-  const buscarIngrediente = document
-    .getElementById("buscarIngrediente")
-    .value.toLowerCase();
-  const ingredientesList = document.getElementById("ingredientes-list");
-  const cards = ingredientesList.getElementsByClassName("ingrediente-item");
+    const textoBusqueda = document.getElementById('buscarIngrediente').value.toLowerCase();
+    const ingredientesList = document.getElementById('ingredientes-list');
+    const cards = ingredientesList.getElementsByClassName('ingrediente-item');
 
-  Array.from(cards).forEach((card) => {
-    const nombre = card.querySelector("h3").textContent.toLowerCase();
-    const matchesFiltro = filtroNombre === "" || nombre === filtroNombre;
-    const matchesBusqueda = nombre.includes(buscarIngrediente);
-    card.style.display = matchesFiltro && matchesBusqueda ? "block" : "none";
-  });
+    Array.from(cards).forEach(card => {
+        const nombre = card.querySelector('.ingrediente-header h4').textContent.toLowerCase();
+        const coincideBusqueda = nombre.includes(textoBusqueda);
+        
+        card.style.display = coincideBusqueda ? 'block' : 'none';
+    });
 }
+
+// Asignar eventos para filtrado instantáneo
+document.getElementById('buscarIngrediente').addEventListener('input', filterIngredientes);
+
 
 // Registrar o actualizar un ingrediente
 async function registerIngrediente() {

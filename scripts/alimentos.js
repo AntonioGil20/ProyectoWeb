@@ -147,29 +147,30 @@ document.querySelector('.botones-categorias .btn-outline.danger').addEventListen
 document.addEventListener('DOMContentLoaded', () => {
   cargarCategorias();
 });
-// Filtrar alimentos por categoría y nombre
-function filterAlimentos() {
-  const filtroCategoria = document
-    .getElementById("filtroCategoria")
-    .value.toLowerCase();
-  const buscarAlimento = document
-    .getElementById("buscarAlimento")
-    .value.toLowerCase();
-  const alimentosList = document.getElementById("alimentos-list");
-  const cards = alimentosList.getElementsByClassName("alimento-item");
 
-  Array.from(cards).forEach((card) => {
-    const categoria = card
-      .querySelector("p:nth-child(2)")
-      .textContent.toLowerCase()
-      .replace("categoría: ", "");
-    const nombre = card.querySelector("h3").textContent.toLowerCase();
-    const matchesCategoria =
-      filtroCategoria === "" || categoria === filtroCategoria;
-    const matchesNombre = nombre.includes(buscarAlimento);
-    card.style.display = matchesCategoria && matchesNombre ? "flex" : "none";
-  });
+// Filtrar alimentos por categoría y nombre
+// Función mejorada para filtrar alimentos
+function filterAlimentos() {
+    const filtroCategoria = document.getElementById('filtroCategoria').value.toLowerCase();
+    const textoBusqueda = document.getElementById('buscarAlimento').value.toLowerCase();
+    const alimentosList = document.getElementById('alimentos-list');
+    const cards = alimentosList.getElementsByClassName('alimento-item');
+
+    Array.from(cards).forEach(card => {
+        const categoria = card.querySelector('.alimento-header h4').textContent.split(' ')[0].toLowerCase();
+        const nombreCompleto = card.querySelector('.alimento-header h4').textContent.toLowerCase();
+        
+        // Verificar coincidencias
+        const coincideCategoria = filtroCategoria === '' || categoria === filtroCategoria;
+        const coincideTexto = nombreCompleto.includes(textoBusqueda);
+        
+        card.style.display = (coincideCategoria && coincideTexto) ? 'block' : 'none';
+    });
 }
+
+// Asignar eventos para filtrado instantáneo
+document.getElementById('buscarAlimento').addEventListener('input', filterAlimentos);
+document.getElementById('filtroCategoria').addEventListener('change', filterAlimentos);
 
 // Registrar o actualizar un alimento
 async function registerAlimento() {

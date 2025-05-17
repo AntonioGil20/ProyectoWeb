@@ -89,25 +89,29 @@ bebidas.forEach((bebida) => {
 }
 
 // Filtrar bebidas por tipo y nombre
+// Función mejorada para filtrar bebidas
 function filterBebidas() {
-  const filtroTipo = document.getElementById("filtroTipo").value.toLowerCase();
-  const buscarBebida = document
-    .getElementById("buscarBebida")
-    .value.toLowerCase();
-  const bebidasList = document.getElementById("bebidas-list");
-  const cards = bebidasList.getElementsByClassName("bebida-item");
+    const filtroTipo = document.getElementById('filtroTipo').value.toLowerCase();
+    const textoBusqueda = document.getElementById('buscarBebida').value.toLowerCase();
+    const bebidasList = document.getElementById('bebidas-list');
+    const cards = bebidasList.getElementsByClassName('bebida-item');
 
-  Array.from(cards).forEach((card) => {
-    const tipo = card
-      .querySelector("p:nth-child(2)")
-      .textContent.toLowerCase()
-      .replace("tipo: ", "");
-    const nombre = card.querySelector("h3").textContent.toLowerCase();
-    const matchesTipo = filtroTipo === "" || tipo === filtroTipo;
-    const matchesNombre = nombre.includes(buscarBebida);
-    card.style.display = matchesTipo && matchesNombre ? "block" : "none";
-  });
+    Array.from(cards).forEach(card => {
+        const tipo = card.querySelector('.bebida-tipo').textContent.toLowerCase();
+        const nombre = card.querySelector('.bebida-header h4').textContent.toLowerCase();
+        
+        // Verificar coincidencias
+        const coincideTipo = filtroTipo === '' || tipo === filtroTipo;
+        const coincideTexto = nombre.includes(textoBusqueda);
+        
+        card.style.display = (coincideTipo && coincideTexto) ? 'block' : 'none';
+    });
 }
+
+// Asignar eventos para filtrado instantáneo
+document.getElementById('buscarBebida').addEventListener('input', filterBebidas);
+document.getElementById('filtroTipo').addEventListener('change', filterBebidas);
+
 
 // Registrar o actualizar una bebida
 async function registerBebida() {

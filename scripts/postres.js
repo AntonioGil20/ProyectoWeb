@@ -93,23 +93,26 @@ postres.forEach((postre) => {
 }
 
 // Filtrar postres por nombre
+// Función mejorada para filtrar postres
 function filterPostres() {
-  const filtroNombre = document
-    .getElementById("filtroNombre")
-    .value.toLowerCase();
-  const buscarPostre = document
-    .getElementById("buscarPostre")
-    .value.toLowerCase();
-  const postresList = document.getElementById("postres-list");
-  const cards = postresList.getElementsByClassName("postre-item");
+    const textoBusqueda = document.getElementById('buscarPostre').value.toLowerCase();
+    const postresList = document.getElementById('postres-list');
+    const cards = postresList.getElementsByClassName('postre-item');
 
-  Array.from(cards).forEach((card) => {
-    const nombre = card.querySelector("h3").textContent.toLowerCase();
-    const matchesFiltro = filtroNombre === "" || nombre === filtroNombre;
-    const matchesBusqueda = nombre.includes(buscarPostre);
-    card.style.display = matchesFiltro && matchesBusqueda ? "block" : "none";
-  });
+    Array.from(cards).forEach(card => {
+        const nombre = card.querySelector('.postre-header h4').textContent.toLowerCase();
+        const stockText = card.querySelector('.postre-stock').textContent.toLowerCase();
+        const stockValue = parseInt(stockText.replace(/\D/g, '')) || 0;
+        
+        // Verificar coincidencias
+        const coincideTexto = nombre.includes(textoBusqueda);
+        
+        card.style.display = coincideTexto ? 'block' : 'none';
+    });
 }
+
+// Asignar eventos para filtrado instantáneo
+document.getElementById('buscarPostre').addEventListener('input', filterPostres);
 
 // Registrar o actualizar un postre
 async function registerPostre() {
