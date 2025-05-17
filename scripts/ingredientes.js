@@ -6,7 +6,16 @@ console.log("Ingredientes.js cargado"); // Depuración
 
 // Variable para rastrear si estamos editando un ingrediente y su ID
 let editingIngredienteId = null;
-
+// Variable para rastrear el estado de edición
+let originalElemento = null;
+// Función unificada para registro/guardado
+async function handleRegistro() {
+    if (editingIngredienteId) {
+        await guardarEdicion();
+    } else {
+        await registerIngrediente();
+    }
+}
 // Renderizar lista de ingredientes
 async function renderIngredientes(retryCount = 0) {
   console.log("Iniciando renderIngredientes..."); // Depuración
@@ -32,24 +41,26 @@ async function renderIngredientes(retryCount = 0) {
       return;
     }
 
-    ingredientes.forEach((ingrediente) => {
-      console.log("Renderizando ingrediente:", ingrediente); // Depuración
-      const card = document.createElement("div");
-      card.className = "ingrediente-item";
-      card.innerHTML = `
-            <div class="ingrediente-item">
-                <div class="ingrediente-header">
-                    <i class="fas fa-pepper-hot"></i>
-                    <h4>${ingrediente.elemento}</h4>
-                </div>
-                <div class="ingrediente-acciones">
-                    <button class="editar"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="eliminar"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                </div>
-            </div>
-        `;
-      ingredientesList.appendChild(card);
-    });
+ingredientes.forEach((ingrediente) => {
+    const card = document.createElement("div");
+    card.className = `ingrediente-item ${editingIngredienteId === ingrediente.id ? 'editing' : ''}`;
+    card.dataset.id = ingrediente.id;
+    card.innerHTML = `
+        <div class="ingrediente-header">
+            <i class="fas fa-pepper-hot"></i>
+            <h4>${ingrediente.elemento}</h4>
+        </div>
+        <div class="ingrediente-acciones">
+            <button class="editar" onclick="editIngrediente('${ingrediente.id}')">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="eliminar" onclick="deleteIngrediente('${ingrediente.id}')">
+                <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+        </div>
+    `;
+    ingredientesList.appendChild(card);
+});
   } catch (error) {
     console.error("Error en renderIngredientes:", error);
     const statusLabel = document.getElementById("statusLabel");
@@ -192,81 +203,134 @@ async function registerIngrediente() {
   await renderIngredientes();
 }
 
-// Eliminar un ingrediente por nombre
-async function deleteIngredienteByName(name) {
-  if (!name) {
-    alert("Ingresa un nombre para eliminar.");
-    return;
-  }
-  const ingredientes = await IngredienteService.getIngredientes();
-  const ingrediente = ingredientes.find((i) => i.elemento === name);
-  if (ingrediente) {
-    const success = await IngredienteService.deleteIngrediente(ingrediente.id);
-    if (success) {
-      await renderIngredientes();
-      document.getElementById("elemento").value = ""; // Limpiar el input
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Ingrediente eliminado correctamente.";
-        statusLabel.style.backgroundColor = "#28a745";
-        statusLabel.style.display = "block";
-      }
-      // Limpiar modo edición si el ingrediente eliminado era el que se estaba editando
-      if (editingIngredienteId === ingrediente.id) {
-        editingIngredienteId = null;
-      }
-    } else {
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Error al eliminar el ingrediente.";
-        statusLabel.style.display = "block";
-      }
-    }
-  } else {
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = "Ingrediente no encontrado.";
-      statusLabel.style.display = "block";
-    }
-  }
-}
-
-// Editar un ingrediente
+// Función para editar ingrediente
 async function editIngrediente(id) {
-  const ingrediente = await IngredienteService.getIngredienteById(id);
-  if (ingrediente) {
-    editingIngredienteId = id; // Establecer el ID del ingrediente que se está editando
-    document.getElementById("elemento").value = ingrediente.elemento;
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = `Editando ingrediente: ${ingrediente.elemento}. Usa Registrar para guardar cambios.`;
-      statusLabel.style.display = "block";
+    try {
+        const ingrediente = await IngredienteService.getIngredienteById(id);
+        if (!ingrediente) throw new Error("Ingrediente no encontrado");
+        
+        editingIngredienteId = id;
+        originalElemento = ingrediente.elemento;
+        
+        // Actualizar UI
+        document.getElementById("elemento").value = ingrediente.elemento;
+        document.getElementById("btn-text").textContent = "Guardar";
+        document.getElementById("btn-cancelar").style.display = "block";
+        
+        // Resaltar en lista
+        resaltarIngredienteEnEdicion(id);
+        mostrarMensaje(`Editando: ${ingrediente.elemento}`, "info");
+    } catch (error) {
+        mostrarMensaje(`Error al cargar: ${error.message}`, "error");
     }
-  }
+}
+// Función para guardar los cambios
+async function guardarEdicion() {
+    const elemento = document.getElementById('elemento').value;
+    
+    if (!elemento) {
+        mostrarMensaje('El nombre del ingrediente es requerido', 'error');
+        return;
+    }
+
+    try {
+        const ingrediente = new Ingrediente({
+            id: editingIngredienteId,
+            elemento
+        });
+        
+        await IngredienteService.updateIngrediente(editingIngredienteId, ingrediente);
+        mostrarMensaje('Ingrediente actualizado correctamente', 'success');
+        resetearModoEdicion();
+        await renderIngredientes();
+    } catch (error) {
+        mostrarMensaje(`Error al actualizar: ${error.message}`, 'error');
+    }
+}
+// Función para cancelar edición
+function cancelarEdicion() {
+    resetearModoEdicion();
+    mostrarMensaje('Edición cancelada', 'info');
 }
 
-// Eliminar un ingrediente (para las cards)
-async function deleteIngrediente(id) {
-  if (confirm("¿Estás seguro de eliminar este ingrediente?")) {
-    const success = await IngredienteService.deleteIngrediente(id);
-    if (success) {
-      await renderIngredientes();
-      // Limpiar modo edición si el ingrediente eliminado era el que se estaba editando
-      if (editingIngredienteId === id) {
-        editingIngredienteId = null;
-        document.getElementById("elemento").value = "";
-        const statusLabel = document.getElementById("statusLabel");
-        if (statusLabel) {
-          statusLabel.textContent = "Ingrediente eliminado.";
-          statusLabel.style.backgroundColor = "#28a745";
-          statusLabel.style.display = "block";
-        }
-      }
-    } else {
-      alert("Error al eliminar el ingrediente.");
-    }
-  }
+// Función para resetear el modo edición
+function resetearModoEdicion() {
+    editingIngredienteId = null;
+    originalElemento = null;
+    document.getElementById('elemento').value = '';
+    document.getElementById('btn-text').textContent = 'Registrar';
+    document.getElementById('btn-cancelar').style.display = 'none';
+    quitarResaltadoEdicion();
 }
+// Función para mostrar mensajes
+function mostrarMensaje(texto, tipo = 'info') {
+    const statusLabel = document.getElementById('statusLabel');
+    if (statusLabel) {
+        statusLabel.textContent = texto;
+        statusLabel.className = `status-message ${tipo}`;
+        statusLabel.style.display = 'block';
+    }
+}
+
+// Función para resaltar el ingrediente en edición
+function resaltarIngredienteEnEdicion(id) {
+    quitarResaltadoEdicion();
+    const card = document.querySelector(`.ingrediente-item[data-id="${id}"]`);
+    if (card) {
+        card.classList.add('editing');
+    }
+}
+
+// Función para quitar el resaltado
+function quitarResaltadoEdicion() {
+    const cards = document.querySelectorAll('.ingrediente-item.editing');
+    cards.forEach(card => card.classList.remove('editing'));
+}
+
+// Función mejorada para eliminar ingrediente
+async function deleteIngrediente(id) {
+    if (confirm("¿Estás seguro de eliminar este ingrediente?")) {
+        try {
+            // Mostrar estado de carga
+            const statusLabel = document.getElementById("statusLabel");
+            if (statusLabel) {
+                statusLabel.textContent = "Eliminando ingrediente...";
+                statusLabel.className = "status-message";
+                statusLabel.style.display = "block";
+            }
+            
+            // Eliminar sin esperar respuesta (Firebase es confiable)
+            await IngredienteService.deleteIngrediente(id);
+            
+            // Actualizar UI inmediatamente
+            await renderIngredientes();
+            
+            // Mostrar mensaje de éxito
+            if (statusLabel) {
+                statusLabel.textContent = "Ingrediente eliminado correctamente.";
+                statusLabel.className = "status-message success";
+                statusLabel.style.display = "block";
+            }
+            
+            // Limpiar edición si corresponde
+            if (editingIngredienteId === id) {
+                editingIngredienteId = null;
+                document.getElementById("elemento").value = "";
+            }
+            
+        } catch (error) {
+            console.error("Error en deleteIngrediente:", error);
+            // El mensaje de error solo se mostrará si realmente falla
+            const statusLabel = document.getElementById("statusLabel");
+            if (statusLabel) {
+                statusLabel.textContent = "Error al eliminar el ingrediente. Recarga la página para verificar.";
+                statusLabel.className = "status-message error";
+                statusLabel.style.display = "block";
+            }
+        }
+    }
+}
+
 
 // Volver atrás
 function goBack() {
@@ -276,8 +340,10 @@ function goBack() {
 
 // Exponer funciones al ámbito global para eventos onclick
 window.registerIngrediente = registerIngrediente;
-window.deleteIngredienteByName = deleteIngredienteByName;
 window.editIngrediente = editIngrediente;
 window.filterIngredientes = filterIngredientes;
 window.deleteIngrediente = deleteIngrediente;
 window.renderIngredientes = renderIngredientes;
+window.handleRegistro = handleRegistro;
+window.cancelarEdicion = cancelarEdicion;
+window.guardarEdicion = guardarEdicion;

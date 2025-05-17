@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimentos</title>
+<link rel="stylesheet" href="/style/base.css">
+<link rel="stylesheet" href="/style/components/form.css">
+<link rel="stylesheet" href="/style/components/list.css">
+<link rel="stylesheet" href="/style/components/modal.css">
+
+    <!-- Incluir Font Awesome para los íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
 <!-- views/alimentos.html -->
 <div class="container">
     <!-- Panel izquierdo - Formulario -->
@@ -35,12 +49,16 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="botones-categorias">
-                <button class="btn-outline"><i class="fas fa-plus-circle"></i> Nueva categoría</button>
-                <button class="btn-outline danger"><i class="fas fa-minus-circle"></i> Eliminar</button>
-            </div>
-        </div>
+<div class="form-group">
+    <div class="botones-categorias">
+        <button class="btn-outline" onclick="agregarNuevaCategoria()">
+            <i class="fas fa-plus-circle"></i> Nueva categoría
+        </button>
+        <button class="btn-outline danger" onclick="eliminarCategoria()">
+            <i class="fas fa-minus-circle"></i> Eliminar
+        </button>
+    </div>
+</div>
 
         <div class="form-group">
             <label>Precios</label>
@@ -62,12 +80,14 @@
             </div>
         </div>
 
-        <div class="form-group action-buttons">
-            <button class="btn-primary" onclick="registerAlimento()"><i class="fas fa-save"></i> Registrar</button>
-            <button class="btn-secondary" onclick="deleteAlimentoByName(document.getElementById('ingrediente').value)">
-                <i class="fas fa-trash-alt"></i> Eliminar
-            </button>
-        </div>
+<div class="form-group action-buttons">
+    <button class="btn-primary" id="btn-registrar-guardar" onclick="handleRegistroAlimento()">
+        <i class="fas fa-save"></i> <span id="btn-text-alimento">Registrar</span>
+    </button>
+    <button class="btn-secondary" id="btn-cancelar-alimento" onclick="cancelarEdicionAlimento()" style="display: none;">
+        <i class="fas fa-times"></i> Cancelar
+    </button>
+</div>
 
         <div class="status-message" id="statusLabel"></div>
     </div>
@@ -75,7 +95,7 @@
     <!-- Panel derecho - Lista -->
     <div class="right-panel">
         <div class="panel-header">
-            <h3>Inventario de Alimentos</h3>
+            <h3>Lista de Alimentos</h3>
             <div class="filtros">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -95,487 +115,67 @@
             <!-- Se llena dinámicamente con JavaScript -->
         </div>
     </div>
+    <!-- Modal para nueva categoría -->
+<div id="modalCategoria" class="modal-categoria-overlay">
+  <div class="modal-categoria-container">
+    <div class="modal-categoria-header">
+      <h3 id="modalCategoriaTitulo">Nueva Categoría</h3>
+      <button class="modal-categoria-close" onclick="cerrarModalCategoria()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-categoria-body">
+      <div class="modal-categoria-input-group">
+        <label for="nombreCategoria">Nombre de la categoría</label>
+        <input type="text" id="nombreCategoria" class="modal-categoria-input" 
+               placeholder="Ej: Burrito, Nachos" maxlength="25">
+      </div>
+      <div id="modalCategoriaMensaje" class="modal-categoria-message" style="display: none;"></div>
+      <div id="modalCategoriaLoading" class="modal-categoria-loading">
+        <i class="fas fa-spinner"></i> Procesando...
+      </div>
+    </div>
+    <div class="modal-categoria-footer">
+      <button class="btn-outline" onclick="cerrarModalCategoria()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="btn-primary" id="modalCategoriaConfirmar" onclick="confirmarModalCategoria()">
+        <i class="fas fa-check"></i> Confirmar
+      </button>
+    </div>
+  </div>
 </div>
 
-<style>
-    /* Estilos base y tipografía */
-    :root {
-        --primary-color: #4a6bff;
-        --secondary-color: #6c757d;
-        --success-color: #28a745;
-        --danger-color: #dc3545;
-        --warning-color: #ffc107;
-        --light-color: #f8f9fa;
-        --dark-color: #343a40;
-        --border-radius: 8px;
-        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        --transition: all 0.3s ease;
-    }
-    
-    * {
-        box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    /* Estructura principal */
-    .container {
-        display: flex;
-        padding: 0px;
-        gap: 24px;
-        min-height: calc(100vh - 60px);
-        background-color: #f5f7fa;
-    }
-    
-    /* Panel izquierdo - Formulario */
-    .left-panel {
-        width: 520px;
-        background-color: white;
-        padding: 24px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    
-    .header-container h2 {
-        font-size: 1.5rem;
-        color: var(--dark-color);
-        font-weight: 600;
-        margin: 0;
-    }
-    
-    .btn-back {
-        background: none;
-        border: none;
-        color: var(--secondary-color);
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: var(--transition);
-        padding: 8px;
-        border-radius: 50%;
-    }
-    
-    .btn-back:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    
-    /* Navegación */
-    .navegacion {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 24px;
-    }
-    
-    .navegacion button {
-        padding: 10px 16px;
-        border: none;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        background-color: var(--light-color);
-        color: var(--secondary-color);
-        font-size: 0.9rem;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .navegacion button:hover {
-        background-color: #e9ecef;
-    }
-    
-    .nav-active {
-        background-color: var(--primary-color) !important;
-        color: white !important;
-    }
-    
-    /* Grupos de formulario */
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--dark-color);
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-    
-    /* Inputs */
-    input, select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #ddd;
-        border-radius: var(--border-radius);
-        font-size: 0.95rem;
-        transition: var(--transition);
-        background-color: white;
-    }
-    
-    input:focus, select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
-    }
-    
-    /* Select personalizado */
-    .select-wrapper {
-        position: relative;
-    }
-    
-    .select-wrapper i {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--secondary-color);
-        pointer-events: none;
-    }
-    
-    /* Precios */
-    .precio-container {
-        display: flex;
-        gap: 12px;
-    }
-    
-    .precio-column {
-        flex: 1;
-    }
-    
-    .input-with-icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-    
-    .input-with-icon .currency {
-        position: absolute;
-        color: var(--secondary-color);
-        font-size: 0.9rem;
-    }
-    
-    .input-with-icon .currency:first-child {
-        left: 12px;
-    }
-    
-    .input-with-icon .currency:last-child {
-        right: 12px;
-    }
-    
-    .input-with-icon input {
-        padding-left: 30px;
-        padding-right: 50px;
-        text-align: right;
-    }
-    
-    /* Botones */
-    .botones-categorias {
-        display: flex;
-        gap: 12px;
-    }
-    
-    .btn-outline {
-        padding: 10px 16px;
-        background-color: transparent;
-        border: 1px solid #ddd;
-        border-radius: var(--border-radius);
-        color: var(--secondary-color);
-        cursor: pointer;
-        transition: var(--transition);
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-outline:hover {
-        background-color: var(--light-color);
-    }
-    
-    .btn-outline.danger {
-        color: var(--danger-color);
-        border-color: #f5c6cb;
-    }
-    
-    .btn-outline.danger:hover {
-        background-color: #f8d7da;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        margin-top: 24px;
-    }
-    
-    .btn-primary {
-        flex: 1;
-        padding: 12px;
-        background-color: var(--success-color);
-        color: white;
-        border: none;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .btn-primary:hover {
-        background-color: #218838;
-    }
-    
-    .btn-secondary {
-        flex: 1;
-        padding: 12px;
-        background-color: var(--danger-color);
-        color: white;
-        border: none;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .btn-secondary:hover {
-        background-color: #c82333;
-    }
-    
-    /* Mensaje de estado */
-    .status-message {
-        margin-top: 16px;
-        padding: 12px;
-        border-radius: var(--border-radius);
-        font-size: 0.9rem;
-        text-align: center;
-        display: none;
-    }
-    
-    .status-message.success {
-        background-color: #d4edda;
-        color: #155724;
-        display: block;
-    }
-    
-    .status-message.error {
-        background-color: #f8d7da;
-        color: #721c24;
-        display: block;
-    }
-    
-    /* Panel derecho - Lista */
-    .right-panel {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background-color: white;
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        padding: 24px;
-    }
-    
-    .panel-header {
-        margin-bottom: 24px;
-    }
-    
-    .panel-header h3 {
-        font-size: 1.3rem;
-        color: var(--dark-color);
-        margin: 0 0 16px 0;
-    }
-    
-    .filtros {
-        display: flex;
-        gap: 16px;
-    }
-    
-    .search-box {
-        flex: 1;
-        position: relative;
-    }
-    
-    .search-box i {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--secondary-color);
-    }
-    
-    .search-box input {
-        padding-left: 40px;
-    }
-    
-    .filtros select {
-        width: 200px;
-    }
-    
-    /* Lista de alimentos */
-    .lista-alimentos {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 16px;
-        overflow-y: auto;
-        flex: 1;
-    }
-    
-    .alimento-item {
-        background-color: white;
-        border-radius: var(--border-radius);
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: var(--transition);
-        border: 1px solid #eee;
-    }
-    
-    .alimento-item:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
-    }
-    
-.alimento-header {
-    margin-bottom: 12px;
-}
-.alimento-header h4 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--dark-color);
-    font-weight: 600;
-}
-    
-/* Eliminar el estilo de la categoría separada */
-.alimento-categoria {
-    display: none;
-}
-    
-    .alimento-precios {
-        margin-top: 12px;
-    }
-    
-    .alimento-precio {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-    }
-    
-    .alimento-precio span:first-child {
-        color: var(--secondary-color);
-    }
-    
-    .alimento-precio span:last-child {
-        font-weight: 500;
-    }
-    
-    .alimento-acciones {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-    }
-    
-    .alimento-acciones button {
-        flex: 1;
-        padding: 8px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    
-    .alimento-acciones .editar {
-        background-color: var(--light-color);
-        color: var(--secondary-color);
-    }
-    
-    .alimento-acciones .editar:hover {
-        background-color: #e9ecef;
-    }
-    
-    .alimento-acciones .eliminar {
-        background-color: #f8d7da;
-        color: var(--danger-color);
-    }
-    
-    .alimento-acciones .eliminar:hover {
-        background-color: #f1b0b7;
-    }
-    
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .container {
-            flex-direction: column;
-        }
-        
-        .left-panel {
-            width: 100%;
-        }
-        
-        .lista-alimentos {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .filtros {
-            flex-direction: column;
-        }
-        
-        .filtros select {
-            width: 100%;
-        }
-    }
-</style>
+<!-- Modal de confirmación para eliminar -->
+<div id="modalConfirmarEliminar" class="modal-categoria-overlay">
+  <div class="modal-categoria-container">
+    <div class="modal-categoria-header">
+      <h3>Confirmar Eliminación</h3>
+      <button class="modal-categoria-close" onclick="cerrarModalConfirmarEliminar()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-categoria-body">
+      <p id="mensajeConfirmacionEliminar">¿Estás seguro de eliminar esta categoría?</p>
+      <div id="modalEliminarMensaje" class="modal-categoria-message" style="display: none;"></div>
+      <div id="modalEliminarLoading" class="modal-categoria-loading">
+        <i class="fas fa-spinner"></i> Eliminando...
+      </div>
+    </div>
+    <div class="modal-categoria-footer">
+      <button class="btn-outline" onclick="cerrarModalConfirmarEliminar()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button class="btn-primary danger" id="modalEliminarConfirmar" onclick="confirmarEliminarCategoria()">
+        <i class="fas fa-trash-alt"></i> Eliminar
+      </button>
+    </div>
+  </div>
+</div>
 
-<!-- Incluir Font Awesome para los íconos -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</div>
 
-<script>
-    // Ejemplo de cómo podría verse un item de alimento
-function renderAlimentoItem(alimento) {
-    return `
-        <div class="alimento-item">
-            <div class="alimento-header">
-                <h4>${alimento.tipoPlatillo} ${alimento.ingrediente}</h4>
-            </div>
-            <div class="alimento-precios">
-                <div class="alimento-precio">
-                    <span>Precio MXN:</span>
-                    <span>$${alimento.precioMx.toFixed(2)}</span>
-                </div>
-                <div class="alimento-precio">
-                    <span>Precio USD:</span>
-                    <span>$${alimento.precioUSD.toFixed(2)}</span>
-                </div>
-            </div>
-            <div class="alimento-acciones">
-                <button class="editar" onclick="editarAlimento('${alimento.id}')">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="eliminar" onclick="eliminarAlimento('${alimento.id}')">
-                    <i class="fas fa-trash-alt"></i> Eliminar
-                </button>
-            </div>
-        </div>
-    `;
-}
-</script>
+
+
+
+

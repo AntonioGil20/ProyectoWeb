@@ -1,0 +1,143 @@
+.modal-categoria-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal-categoria-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-categoria-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 90%;
+    max-width: 420px;
+    transform: translateY(20px);
+}
+.modal-categoria-overlay.active .modal-categoria-container {
+    transform: translateY(0);
+}
+
+/* Encabezado */
+.modal-categoria-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-categoria-header h3 {
+    margin: 0;
+    color: var(--dark-color);
+    font-size: 1.2rem;
+}
+
+.modal-categoria-close {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.modal-categoria-body {
+    padding: 24px;
+}
+.modal-categoria-input-group {
+    margin-bottom: 20px;
+}
+
+.modal-categoria-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--dark-color);
+    font-size: 0.9rem;
+}
+
+.modal-categoria-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+}
+
+.modal-categoria-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+}
+
+.modal-categoria-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Mensajes */
+.status-message, .modal-categoria-message {
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    display: none;
+    text-align: center;
+}
+
+.status-message.success, .modal-categoria-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    display: block;
+}
+
+.status-message.error, .modal-categoria-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    display: block;
+}
+
+.status-message.info {
+    background-color: #e7f5ff;
+    color: #1864ab;
+}
+
+.status-message.warning {
+    background-color: #fff3bf;
+    color: #5f3f00;
+}
+/* Efectos de carga */
+.modal-categoria-loading {
+    display: none;
+    text-align: center;
+    padding: 16px;
+}
+
+.modal-categoria-loading.active {
+    display: block;
+}
+
+.modal-categoria-loading i {
+    animation: spin 1s linear infinite;
+    color: var(--primary-color);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+

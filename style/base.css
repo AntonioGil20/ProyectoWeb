@@ -1,0 +1,242 @@
+:root {
+    --primary-color: #4a6bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+    --success-light: #e8f5e9;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estructura principal */
+.container {
+    display: flex;
+    padding: 0;
+    gap: 24px;
+    min-height: calc(100vh - 60px);
+    background-color: #f5f7fa;
+}
+
+.left-panel {
+    width: 520px;
+    background-color: white;
+    padding: 24px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 24px;
+}
+
+/* Componentes comunes */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-container h2, .panel-header h3 {
+    color: var(--dark-color);
+    font-weight: 600;
+    margin: 0;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.btn-back:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    .left-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .filtros {
+        flex-direction: column;
+    }
+}
+
+/*----------------------------------------------------*/
+/* css de alimentos */
+    /* Select personalizado */
+    /* Botones */
+    .botones-categorias {
+        display: flex;
+        gap: 12px;
+    }    
+    .btn-outline {
+        padding: 10px 16px;
+        background-color: transparent;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        color: var(--secondary-color);
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }    
+    .btn-outline:hover {
+        background-color: var(--light-color);
+    }   
+    .btn-outline.danger {
+        color: var(--danger-color);
+        border-color: #f5c6cb;
+    }   
+    .btn-outline.danger:hover {
+        background-color: #f8d7da;
+    }
+
+    /* Panel derecho - Lista */
+
+    .alimento-categoria {
+    display: none;
+    }   
+    .alimento-precios {
+        margin-top: 12px;
+    }    
+    .alimento-precio {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }    
+    .alimento-precio span:first-child {
+        color: var(--secondary-color);
+    }    
+    .alimento-precio span:last-child {
+        font-weight: 500;
+    }
+
+    /* Transición suave para el modo edición */
+    .alimento-item {
+    transition: all 0.3s ease;
+    }
+    /* Estilos para mensajes */
+    .status-message.info {
+    background-color: #e7f5ff;
+    color: #1864ab;
+    }
+    .status-message.warning {
+    background-color: #fff3bf;
+    color: #5f3f00;
+    }
+
+/*----------------------------------------------------*/
+/* css de BEBIDAS */
+    .bebida-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }    
+    .bebida-tipo {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }    
+    .bebida-precios {
+        margin-top: 12px;
+    }   
+    .bebida-precio {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }   
+    .bebida-precio span:first-child {
+        color: var(--secondary-color);
+    }    
+    .bebida-precio span:last-child {
+        font-weight: 500;
+    }
+    /* Transición suave para el modo edición */
+    .bebida-item {
+    transition: all 0.3s ease;
+    }
+
+/*----------------------------------------------------*/
+/* css de POSTRES */    
+    .postre-precios {
+        margin-top: 12px;
+    }   
+    .postre-precio {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }   
+    .postre-precio span:first-child {
+        color: var(--secondary-color);
+    }   
+    .postre-precio span:last-child {
+        font-weight: 500;
+    } 
+    .postre-stock {
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        margin-top: 8px;
+    }
+    /* Transición suave para el modo edición */
+    .postre-item {
+    transition: all 0.3s ease;
+    }
+/*----------------------------------------------------*/
+/* css de ingredientes */
+    .ingrediente-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    
+    .ingrediente-header i {
+        color: var(--success-color);
+        font-size: 1.2rem;
+    }
+    
+    .ingrediente-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--dark-color);
+    }

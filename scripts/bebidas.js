@@ -6,7 +6,16 @@ console.log("Bebidas.js cargado"); // Depuración
 
 // Variable para rastrear si estamos editando una bebida y su ID
 let editingBebidaId = null;
+let originalBebidaData = null;
 
+// Función unificada para registro/guardado
+async function handleRegistroBebida() {
+    if (editingBebidaId) {
+        await guardarEdicionBebida();
+    } else {
+        await registerBebida();
+    }
+}
 // Renderizar lista de bebidas
 async function renderBebidas(retryCount = 0) {
   console.log("Iniciando renderBebidas..."); // Depuración
@@ -32,34 +41,36 @@ async function renderBebidas(retryCount = 0) {
       return;
     }
 
-    bebidas.forEach((bebida) => {
-      console.log("Renderizando bebida:", bebida); // Depuración
-      const card = document.createElement("div");
-      card.className = "bebida-item";
-      card.innerHTML = `
-            <div class="bebida-item">
-                <div class="bebida-header">
-                    <h4>${bebida.nombre}</h4>
-                    <span class="bebida-tipo">${bebida.tipoBebidas}</span>
-                </div>
-                <div class="bebida-precios">
-                    <div class="bebida-precio">
-                        <span>Precio MXN:</span>
-                        <span>$${bebida.precioMx.toFixed(2)}</span>
-                    </div>
-                    <div class="bebida-precio">
-                        <span>Precio USD:</span>
-                        <span>$${bebida.precioUSD.toFixed(2)}</span>
-                    </div>
-                </div>
-                <div class="bebida-acciones">
-                    <button class="editar"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="eliminar"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                </div>
+bebidas.forEach((bebida) => {
+    const card = document.createElement("div");
+    card.className = `bebida-item ${editingBebidaId === bebida.id ? 'editing' : ''}`;
+    card.dataset.id = bebida.id;
+    card.innerHTML = `
+        <div class="bebida-header">
+            <h4>${bebida.nombre}</h4>
+            <span class="bebida-tipo">${bebida.tipoBebidas}</span>
+        </div>
+        <div class="bebida-precios">
+            <div class="bebida-precio">
+                <span>Precio MXN:</span>
+                <span>$${bebida.precioMx.toFixed(2)}</span>
             </div>
-        `;
-      bebidasList.appendChild(card);
-    });
+            <div class="bebida-precio">
+                <span>Precio USD:</span>
+                <span>$${bebida.precioUSD.toFixed(2)}</span>
+            </div>
+        </div>
+        <div class="bebida-acciones">
+            <button class="editar" onclick="editBebida('${bebida.id}')">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="eliminar" onclick="deleteBebida('${bebida.id}')">
+                <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+        </div>
+    `;
+    bebidasList.appendChild(card);
+});
   } catch (error) {
     console.error("Error en renderBebidas:", error);
     const statusLabel = document.getElementById("statusLabel");
@@ -211,92 +222,152 @@ async function registerBebida() {
 
   // Limpiar el formulario y actualizar la lista
   document.getElementById("nombre").value = "";
-  document.getElementById("tipoBebidas").value = "Sin alcohol";
+  document.getElementById("tipoBebidas").value = "";
   document.getElementById("precioMx").value = "";
   document.getElementById("precioUSD").value = "";
   await renderBebidas();
 }
 
-// Eliminar una bebida por nombre
-async function deleteBebidaByName(name) {
-  if (!name) {
-    alert("Ingresa un nombre para eliminar.");
-    return;
-  }
-  const bebidas = await BebidaService.getBebidas();
-  const bebida = bebidas.find((b) => b.nombre === name);
-  if (bebida) {
-    const success = await BebidaService.deleteBebida(bebida.id);
-    if (success) {
-      await renderBebidas();
-      document.getElementById("nombre").value = ""; // Limpiar el input
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Bebida eliminada correctamente.";
-        statusLabel.style.backgroundColor = "#28a745";
-        statusLabel.style.display = "block";
-      }
-      // Limpiar modo edición si la bebida eliminada era la que se estaba editando
-      if (editingBebidaId === bebida.id) {
-        editingBebidaId = null;
-      }
-    } else {
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Error al eliminar la bebida.";
-        statusLabel.style.display = "block";
-      }
+// Función para editar bebida
+async function editBebida(id) {
+    try {
+        const bebida = await BebidaService.getBebidaById(id);
+        if (!bebida) throw new Error("Bebida no encontrada");
+        
+        editingBebidaId = id;
+        originalBebidaData = {
+            nombre: bebida.nombre,
+            tipoBebidas: bebida.tipoBebidas,
+            precioMx: bebida.precioMx,
+            precioUSD: bebida.precioUSD
+        };
+        
+        // Actualizar UI para modo edición
+        document.getElementById('nombre').value = bebida.nombre;
+        document.getElementById('tipoBebidas').value = bebida.tipoBebidas;
+        document.getElementById('precioMx').value = bebida.precioMx;
+        document.getElementById('precioUSD').value = bebida.precioUSD;
+        document.getElementById('btn-text-bebida').textContent = 'Guardar';
+        document.getElementById('btn-cancelar-bebida').style.display = 'block';
+        
+        // Resaltar la bebida en la lista
+        resaltarBebidaEnEdicion(id);
+        
+        // Mostrar mensaje
+        mostrarMensajeBebida(`Editando: ${bebida.nombre}`, 'info');
+    } catch (error) {
+        mostrarMensajeBebida(`Error al cargar: ${error.message}`, 'error');
     }
-  } else {
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = "Bebida no encontrada.";
-      statusLabel.style.display = "block";
-    }
-  }
 }
 
-// Editar una bebida
-async function editBebida(id) {
-  const bebida = await BebidaService.getBebidaById(id);
-  if (bebida) {
-    editingBebidaId = id; // Establecer el ID de la bebida que se está editando
-    document.getElementById("nombre").value = bebida.nombre;
-    document.getElementById("tipoBebidas").value = bebida.tipoBebidas;
-    document.getElementById("precioMx").value = bebida.precioMx;
-    document.getElementById("precioUSD").value = bebida.precioUSD;
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = `Editando bebida: ${bebida.nombre}. Usa Registrar para guardar cambios.`;
-      statusLabel.style.display = "block";
+// Función para guardar los cambios
+async function guardarEdicionBebida() {
+    const nombre = document.getElementById('nombre').value;
+    const tipoBebidas = document.getElementById('tipoBebidas').value;
+    const precioMx = parseFloat(document.getElementById('precioMx').value) || 0;
+    const precioUSD = parseFloat(document.getElementById('precioUSD').value) || 0;
+    
+    if (!nombre) {
+        mostrarMensajeBebida('El nombre de la bebida es requerido', 'error');
+        return;
     }
-  }
+
+    try {
+        const bebida = new Bebida({
+            id: editingBebidaId,
+            nombre,
+            tipoBebidas,
+            precioMx,
+            precioUSD
+        });
+        
+        await BebidaService.updateBebida(editingBebidaId, bebida);
+        mostrarMensajeBebida('Bebida actualizada correctamente', 'success');
+        resetearModoEdicionBebida();
+        await renderBebidas();
+    } catch (error) {
+        mostrarMensajeBebida(`Error al actualizar: ${error.message}`, 'error');
+    }
+}
+
+// Función para cancelar edición
+function cancelarEdicionBebida() {
+    resetearModoEdicionBebida();
+    mostrarMensajeBebida('Edición cancelada', 'info');
+}
+
+// Función para resetear el modo edición
+function resetearModoEdicionBebida() {
+    // Limpiar completamente el formulario
+    document.getElementById('nombre').value = '';
+    document.getElementById('tipoBebidas').value = '';
+    document.getElementById('precioMx').value = '';
+    document.getElementById('precioUSD').value = '';
+    
+    // Restablecer variables de estado
+    editingBebidaId = null;
+    originalBebidaData = null;
+    
+    // Restablecer UI
+    document.getElementById('btn-text-bebida').textContent = 'Registrar';
+    document.getElementById('btn-cancelar-bebida').style.display = 'none';
+    quitarResaltadoEdicionBebida();
+    
+    // Opcional: enfocar el campo nombre para nuevo registro
+    document.getElementById('nombre').focus();
+}
+
+// Función para mostrar mensajes
+function mostrarMensajeBebida(texto, tipo = 'info') {
+    const statusLabel = document.getElementById('statusLabel');
+    if (statusLabel) {
+        statusLabel.textContent = texto;
+        statusLabel.className = `status-message ${tipo}`;
+        statusLabel.style.display = 'block';
+    }
+}
+
+// Función para resaltar la bebida en edición
+function resaltarBebidaEnEdicion(id) {
+    quitarResaltadoEdicionBebida();
+    const card = document.querySelector(`.bebida-item[data-id="${id}"]`);
+    if (card) {
+        card.classList.add('editing');
+    }
+}
+
+// Función para quitar el resaltado
+function quitarResaltadoEdicionBebida() {
+    const cards = document.querySelectorAll('.bebida-item.editing');
+    cards.forEach(card => card.classList.remove('editing'));
 }
 
 // Eliminar una bebida (para las cards)
 async function deleteBebida(id) {
-  if (confirm("¿Estás seguro de eliminar esta bebida?")) {
-    const success = await BebidaService.deleteBebida(id);
-    if (success) {
-      await renderBebidas();
-      // Limpiar modo edición si la bebida eliminada era la que se estaba editando
-      if (editingBebidaId === id) {
-        editingBebidaId = null;
-        document.getElementById("nombre").value = "";
-        document.getElementById("tipoBebidas").value = "Sin alcohol";
-        document.getElementById("precioMx").value = "";
-        document.getElementById("precioUSD").value = "";
-        const statusLabel = document.getElementById("statusLabel");
-        if (statusLabel) {
-          statusLabel.textContent = "Bebida eliminada.";
-          statusLabel.style.backgroundColor = "#28a745";
-          statusLabel.style.display = "block";
+    if (confirm("¿Estás seguro de eliminar esta bebida?")) {
+        try {
+            // Mostrar estado de carga
+            mostrarMensajeBebida("Eliminando bebida...", "info");
+            
+            // Eliminar sin esperar respuesta (Firebase es confiable)
+            await BebidaService.deleteBebida(id);
+            
+            // Actualizar UI inmediatamente
+            await renderBebidas();
+            
+            // Mostrar mensaje de éxito
+            mostrarMensajeBebida("Bebida eliminada correctamente", "success");
+            
+            // Limpiar edición si corresponde
+            if (editingBebidaId === id) {
+                resetearModoEdicionBebida();
+            }
+            
+        } catch (error) {
+            console.error("Error en deleteBebida:", error);
+            mostrarMensajeBebida("Error al eliminar la bebida. Recarga la página para verificar.", "error");
         }
-      }
-    } else {
-      alert("Error al eliminar la bebida.");
     }
-  }
 }
 
 // Volver atrás
@@ -307,8 +378,11 @@ function goBack() {
 
 // Exponer funciones al ámbito global para eventos onclick
 window.registerBebida = registerBebida;
-window.deleteBebidaByName = deleteBebidaByName;
 window.editBebida = editBebida;
 window.filterBebidas = filterBebidas;
 window.deleteBebida = deleteBebida;
 window.renderBebidas = renderBebidas;
+window.handleRegistroBebida = handleRegistroBebida;
+window.cancelarEdicionBebida = cancelarEdicionBebida;
+window.editBebida = editBebida;
+window.deleteBebida = deleteBebida;
