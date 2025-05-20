@@ -1,0 +1,398 @@
+    /* Estilos generales */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --light-gray: #ecf0f1;
+    --dark-gray: #7f8c8d;
+    --shadow: 0 0 15px rgba(0,0,0,0.05);
+    --transition: all 0.3s ease;
+}
+
+
+/* Estructura principal */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0px;
+    gap: 20px;
+    background-color: #f5f7fa;
+}
+    
+/* Panel de formulario */
+.form-panel {
+    width: 380px;
+    background: white;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    border-radius: 10px;
+    height: fit-content;
+}
+    
+    .form-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .form-header h2 {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        flex-grow: 1;
+        text-align: center;
+    }
+    /* Grupos de formulario */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .form-group input {
+        width: 90%;
+        padding: 12px 15px;
+        border: 1px solid var(--light-gray);
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .form-group input:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    /* Campos con iconos */
+    .input-with-icon {
+        position: relative;
+    }
+    
+.input-with-icon img.toggle-password,
+.password-container img.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.input-with-icon img.toggle-password:hover,
+.password-container img.toggle-password:hover {
+    opacity: 0.8;
+}
+
+    
+/* Mensajes de estado */
+.status-message {
+    padding: 12px;
+    border-radius: 6px;
+    margin: 20px 0;
+    display: none;
+    text-align: center;
+}
+
+.status-message.error {
+    background-color: #fdecea;
+    color: var(--danger-color);
+    display: block;
+}
+
+.status-message.success {
+    background-color: #e8f5e9;
+    color: var(--success-color);
+    display: block;
+}
+    
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+   /* Botones de acción para meseros */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+} 
+.btn-action {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+    /* Botones */
+.btn {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+    
+    .primary-btn {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    .primary-btn:hover {
+        background-color: #2980b9;
+    }
+    .secondary-btn {
+    background-color: #95a5a6;
+    color: white;
+    }
+
+    .secondary-btn:hover {
+    background-color: #7f8c8d;
+    }
+    .danger-btn {
+        background-color: var(--danger-color);
+        color: white;
+    }
+    
+    .danger-btn:hover {
+        background-color: #c0392b;
+    }
+    
+    .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .back-btn {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+    
+    .back-btn:hover {
+        background-color: var(--light-gray);
+    }
+    
+/* Panel derecho */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+    .search-container {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    
+    .search-container i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--dark-gray);
+    }
+    
+    .search-container input {
+        width: 95%;
+        padding: 12px 15px 12px 40px;
+        border: 1px solid var(--light-gray);
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+/* Tarjetas de meseros */
+.mesero-card {
+    display: flex;
+    border: 1px solid var(--light-gray);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    align-items: center;
+    transition: var(--transition);
+}
+    .mesero-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+    .mesero-card img {
+        width: 80px;
+        height: 80px;
+            object-fit: cover;
+    border-radius: 50%;
+    background-color: #dfe6e9;  
+  }
+    .mesero-info {
+        margin-left: 20px;
+        flex: 1;
+    }
+.mesero-info h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+    .mesero-info input {
+        margin-top: 5px;
+        width: 100%;
+        padding: 8px;
+        background-color: whitesmoke;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+    }
+    .mesero-info button {
+        margin-top: 10px;
+        padding: 8px 15px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Estilos para tarjeta seleccionada */
+/* Tarjeta seleccionada */
+.mesero-card.selected {
+    border: 2px solid var(--secondary-color);
+    background-color: #f0f8ff;
+}
+.mesero-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+/* Estilos para el campo de contraseña */
+.password-container {
+  position: relative;
+  margin: 10px 0;
+}
+
+.password-container input {
+  padding-right: 30px !important;
+  width: 90% !important;
+}
+
+.password-container .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #7f8c8d;
+}
+
+/* Estilos para mensajes de estado */
+.status-message {
+  padding: 12px;
+  border-radius: 6px;
+  margin: 15px 0;
+  display: none;
+}
+
+.status-message.info {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-message.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Estilos para botones */
+.btn-edit, .btn-delete {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition);
+}
+
+.btn-edit {
+    background-color: var(--light-gray); /* Gris más claro */
+    color: var(--primary-color);
+    border: 1px solid var(--light-gray);
+}
+
+.btn-edit:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+}
+
+.btn-delete {
+    background-color: #ffebee; /* Rosa más visible */
+    color: #cc5050ee;
+    border: 1px solid var(--danger-color);
+}
+
+.btn-delete:hover {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+/* Iconos dentro de los botones */
+.btn-action i {
+    font-size: 14px;
+}
+
+/* Ajustes para los botones en modo edición */
+/* Modo edición */
+.editing-mode .primary-btn {
+    background-color: var(--secondary-color);
+}
+
+
+.editing-mode .form-actions {
+    display: flex;
+    gap: 10px;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    
+    .form-panel {
+        width: 100%;
+    }
+}

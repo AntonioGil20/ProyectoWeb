@@ -7,70 +7,101 @@ console.log("Usuarios.js cargado"); // Depuración
 // Variable para rastrear si estamos editando un mesero y su ID
 let editingMeseroId = null;
 
-// Mostrar u ocultar contraseña
-function togglePasswordVisibility(inputId, iconId) {
-  const input = document.getElementById(inputId);
-  const icon = document.getElementById(iconId);
-  if (input && icon) {
-    if (input.type === "password") {
-      input.type = "text";
-      icon.src = "images/ocultar.png"; // Asegúrate de tener esta imagen
-    } else {
-      input.type = "password";
-      icon.src = "images/ver.png";
-    }
-  } else {
-    console.error(
-      `No se encontraron los elementos: inputId=${inputId}, iconId=${iconId}`
-    );
+// Inicialización cuando se carga la vista
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Módulo de usuarios inicializado");
+  
+  // Renderizar meseros
+  renderMeseros();
+  
+  // Asignar evento al botón de registrar/guardar
+  const submitBtn = document.querySelector('.primary-btn');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', registerMesero);
   }
+  
+  // Asignar eventos de teclado para búsqueda
+  const searchInput = document.querySelector('.search-container input');
+  if (searchInput) {
+    searchInput.addEventListener('input', filterMeseros);
+  }
+    // Configurar eventos para los iconos de contraseña
+  document.querySelectorAll('.toggle-password').forEach(icon => {
+    icon.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      togglePasswordVisibility(targetId, this);
+    });
+  });
+});
+
+// Función mejorada para mostrar/ocultar contraseña
+function togglePasswordVisibility(inputId, iconElement = null) {
+    // Si no viene el iconElement, buscarlo por data-target
+    const icon = iconElement || document.querySelector(`.toggle-password[data-target="${inputId}"]`);
+    const input = document.getElementById(inputId);
+    
+    if (!input || !icon) return;
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.src = "/images/esconder.png";
+        icon.setAttribute('data-visible', 'true');
+    } else {
+        input.type = "password";
+        icon.src = "/images/ver.png";
+        icon.setAttribute('data-visible', 'false');
+    }
 }
 
-// Renderizar lista de meseros
-async function renderMeseros(retryCount = 0) {
-  const meserosList = document.getElementById("meseros-list");
-  if (!meserosList) {
-    console.error("Elemento meseros-list no encontrado en el DOM.");
-    return;
-  }
 
+// Asignar eventos a los iconos de visibilidad
+document.querySelectorAll('.toggle-password').forEach(icon => {
+  icon.addEventListener('click', () => {
+    togglePasswordVisibility(icon.dataset.target);
+  });
+});
+
+
+// Renderizado de meseros con mejor visualización de contraseñas
+async function renderMeseros() {
+  const meserosList = document.getElementById("meseros-list");
   meserosList.innerHTML = "<p>Cargando meseros...</p>";
 
   try {
     const meseros = await MeseroService.getMeseros();
-    console.log("Meseros renderizados:", meseros); // Depuración
     meserosList.innerHTML = "";
 
-    if (meseros.length === 0) {
-      meserosList.innerHTML = "<p>No hay meseros registrados.</p>";
-      return;
-    }
-
-    meseros.forEach((mesero) => {
+    meseros.forEach(mesero => {
       const card = document.createElement("div");
-      card.className = "mesero-card";
-      card.innerHTML = `
-        <img src="images/user.png" alt="Usuario">
-        <div class="mesero-info">
-          <h3>${mesero.name}</h3>
-          <input type="password" value="********" readonly>
-          <button onclick="editMesero('${mesero.id}')">Editar</button>
-          <button onclick="deleteMesero('${mesero.id}')">Eliminar</button>
+      card.className = `mesero-card ${editingMeseroId === mesero.id ? 'selected' : ''}`;
+      card.dataset.id = mesero.id;
+card.innerHTML = `
+    <img src="images/user.png" alt="Usuario" class="user-avatar">
+    <div class="mesero-info">
+        <h3>${mesero.name}</h3>
+        <div class="password-container">
+            <input type="password" value="${mesero.password}" readonly id="pw-${mesero.id}">
+            <img src="/images/ver.png" class="toggle-password" onclick="togglePassword('pw-${mesero.id}', this)" data-visible="false">
         </div>
-      `;
+        <div class="action-buttons">
+            <button class="btn-action btn-edit" onclick="editMesero('${mesero.id}')">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn-action btn-delete" onclick="deleteMesero('${mesero.id}')">
+                <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+        </div>
+    </div>
+`;
+
       meserosList.appendChild(card);
     });
   } catch (error) {
-    console.error("Error en renderMeseros:", error);
-    if (retryCount < 3) {
-      console.warn("Reintentando conexión...", retryCount + 1);
-      setTimeout(() => renderMeseros(retryCount + 1), 1000); // Reintenta después de 1 segundo
-    } else {
-      meserosList.innerHTML =
-        "<p>Error al cargar los meseros. Verifica tu conexión.</p>";
-    }
+    console.error("Error al renderizar meseros:", error);
+    meserosList.innerHTML = `<p class="error">Error al cargar los meseros: ${error.message}</p>`;
   }
 }
+
 
 // Filtrar meseros por nombre
 function filterMeseros() {
@@ -91,162 +122,169 @@ function filterMeseros() {
 
 // Registrar o actualizar un mesero
 async function registerMesero() {
-  const name = document.getElementById("meseroName")?.value;
-  const password = document.getElementById("meseroPassword")?.value;
-  const confirmPassword = document.getElementById("confirmPassword")?.value;
-  const statusLabel = document.getElementById("statusLabel");
+  const name = document.getElementById("meseroName").value.trim();
+  const password = document.getElementById("meseroPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
 
+  // Validaciones
   if (!name || !password || !confirmPassword) {
-    if (statusLabel) {
-      statusLabel.textContent = "Todos los campos son requeridos.";
-      statusLabel.style.display = "block";
-    }
-    return;
+    return showStatusMessage("Todos los campos son requeridos", "error");
+  }
+
+  if (password.length < 8) {
+    return showStatusMessage("La contraseña debe tener al menos 8 caracteres", "error");
   }
 
   if (password !== confirmPassword) {
-    if (statusLabel) {
-      statusLabel.textContent = "Las contraseñas no coinciden.";
-      statusLabel.style.display = "block";
-    }
-    return;
+    return showStatusMessage("Las contraseñas no coinciden", "error");
   }
 
-  // Verificar si el nombre ya está registrado (excepto si estamos editando el mismo mesero)
-  const meseros = await MeseroService.getMeseros();
-  const isRegistered = meseros.some(
-    (mesero) => mesero.name === name && mesero.id !== editingMeseroId
-  );
-  if (isRegistered) {
-    if (statusLabel) {
-      statusLabel.textContent = "El nombre ya está registrado.";
-      statusLabel.style.display = "block";
-    }
-    return;
-  }
-
-  let success;
-  if (editingMeseroId) {
-    // Modo edición: actualizar mesero existente
-    const mesero = new Mesero({ id: editingMeseroId, name, password });
-    success = await MeseroService.updateMesero(mesero);
-    if (success) {
-      if (statusLabel) {
-        statusLabel.textContent = "Mesero actualizado correctamente.";
-        statusLabel.style.backgroundColor = "#28a745";
-        statusLabel.style.display = "block";
-      }
-      // Limpiar el modo edición
-      editingMeseroId = null;
+  try {
+    let success;
+    if (editingMeseroId) {
+      // Modo edición
+      const mesero = new Mesero({ id: editingMeseroId, name, password });
+      success = await MeseroService.updateMesero(mesero);
     } else {
-      if (statusLabel) {
-        statusLabel.textContent = "Error al actualizar el mesero.";
-        statusLabel.style.display = "block";
-      }
-      return;
+      // Modo registro
+      const mesero = new Mesero({ name, password });
+      success = await MeseroService.saveMesero(mesero);
     }
-  } else {
-    // Modo registro: crear nuevo mesero
-    const mesero = new Mesero({ name, password });
-    success = await MeseroService.saveMesero(mesero);
-    if (success) {
-      if (statusLabel) {
-        statusLabel.textContent = "Mesero registrado correctamente.";
-        statusLabel.style.backgroundColor = "#28a745";
-        statusLabel.style.display = "block";
-      }
-    } else {
-      if (statusLabel) {
-        statusLabel.textContent = "Error al registrar el mesero.";
-        statusLabel.style.display = "block";
-      }
-      return;
-    }
-  }
 
-  // Limpiar el formulario y actualizar la lista
-  document.getElementById("meseroName").value = "";
-  document.getElementById("meseroPassword").value = "";
-  document.getElementById("confirmPassword").value = "";
-  await renderMeseros();
-}
-
-// Eliminar un mesero por nombre
-async function deleteMeseroByName(name) {
-  if (!name) {
-    alert("Ingresa un nombre para eliminar.");
-    return;
-  }
-  const meseros = await MeseroService.getMeseros();
-  const mesero = meseros.find((m) => m.name === name);
-  if (mesero) {
-    const success = await MeseroService.deleteMesero(mesero.id);
     if (success) {
+      resetForm();
       await renderMeseros();
-      document.getElementById("meseroName").value = ""; // Limpiar el input
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Mesero eliminado correctamente.";
-        statusLabel.style.backgroundColor = "#28a745";
-        statusLabel.style.display = "block";
-      }
-      // Limpiar modo edición si el mesero eliminado era el que se estaba editando
-      if (editingMeseroId === mesero.id) {
-        editingMeseroId = null;
-      }
+      showStatusMessage(
+        editingMeseroId 
+          ? `Mesero "${name}" actualizado correctamente` 
+          : `Mesero "${name}" registrado correctamente`,
+        "success"
+      );
     } else {
-      const statusLabel = document.getElementById("statusLabel");
-      if (statusLabel) {
-        statusLabel.textContent = "Error al eliminar el mesero.";
-        statusLabel.style.display = "block";
-      }
+      showStatusMessage("Error al guardar el mesero", "error");
     }
-  } else {
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = "Mesero no encontrado.";
-      statusLabel.style.display = "block";
-    }
+  } catch (error) {
+    console.error("Error en registerMesero:", error);
+    showStatusMessage(error.message || "Error al procesar la solicitud", "error");
   }
 }
 
-// Editar un mesero
+// Función editMesero mejorada con resaltado visual
+// Función para activar el modo edición
 async function editMesero(id) {
-  const mesero = await MeseroService.getMeseroById(id);
-  if (mesero) {
-    editingMeseroId = id; // Establecer el ID del mesero que se está editando
-    document.getElementById("meseroName").value = mesero.name;
-    document.getElementById("meseroPassword").value = mesero.password;
-    document.getElementById("confirmPassword").value = mesero.password;
-    const statusLabel = document.getElementById("statusLabel");
-    if (statusLabel) {
-      statusLabel.textContent = `Editando mesero: ${mesero.name}. Usa Registrar para guardar cambios.`;
-      statusLabel.style.display = "block";
+    // Quitar selección de cualquier otra tarjeta
+    document.querySelectorAll('.mesero-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    const mesero = await MeseroService.getMeseroById(id);
+    if (mesero) {
+        editingMeseroId = id;
+        
+        // Resaltar la tarjeta seleccionada
+        const selectedCard = document.querySelector(`.mesero-card[data-id="${id}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+
+        // Actualizar formulario
+        document.getElementById("meseroName").value = mesero.name;
+        document.getElementById("meseroPassword").value = mesero.password;
+        document.getElementById("confirmPassword").value = mesero.password;
+        
+        // Cambiar a modo edición
+        const submitBtn = document.getElementById("submitBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const formPanel = document.querySelector('.form-panel');
+        
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        }
+        if (cancelBtn) {
+            cancelBtn.style.display = 'block';
+        }
+        if (formPanel) {
+            formPanel.classList.add('editing-mode');
+        }
+
+        // Mostrar mensaje de estado
+        showStatusMessage(`Editando mesero: ${mesero.name}`, 'info');
     }
-  }
 }
 
-// Eliminar un mesero (para las cards)
+// Función para cancelar la edición
+function cancelEdit() {
+    resetForm();
+    showStatusMessage("Edición cancelada", 'info');
+}
+
+// Función resetForm actualizada
+function resetForm() {
+    document.getElementById("meseroName").value = "";
+    document.getElementById("meseroPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
+    editingMeseroId = null;
+    
+    // Restaurar botones a estado normal
+    const submitBtn = document.getElementById("submitBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const formPanel = document.querySelector('.form-panel');
+    
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Registrar Mesero';
+    }
+    if (cancelBtn) {
+        cancelBtn.style.display = 'none';
+    }
+    if (formPanel) {
+        formPanel.classList.remove('editing-mode');
+    }
+    
+    // Quitar selección de tarjetas
+    document.querySelectorAll('.mesero-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+}
+
+
+// Función deleteMesero mejorada con confirmación personalizada
 async function deleteMesero(id) {
-  if (confirm("¿Estás seguro de eliminar este mesero?")) {
+  const mesero = await MeseroService.getMeseroById(id);
+  if (!mesero) return;
+
+  // Crear modal de confirmación personalizado
+  const confirmDelete = confirm(`¿Estás seguro de eliminar al mesero "${mesero.name}"? Esta acción no se puede deshacer.`);
+  
+  if (confirmDelete) {
     const success = await MeseroService.deleteMesero(id);
     if (success) {
       await renderMeseros();
-      // Limpiar modo edición si el mesero eliminado era el que se estaba editando
+      
+      // Si el mesero eliminado era el que se estaba editando
       if (editingMeseroId === id) {
-        editingMeseroId = null;
-        document.getElementById("meseroName").value = "";
-        document.getElementById("meseroPassword").value = "";
-        document.getElementById("confirmPassword").value = "";
-        const statusLabel = document.getElementById("statusLabel");
-        if (statusLabel) {
-          statusLabel.textContent = "Mesero eliminado.";
-          statusLabel.style.backgroundColor = "#28a745";
-          statusLabel.style.display = "block";
-        }
+        resetForm();
       }
+      
+      // Mostrar notificación de éxito
+      showStatusMessage(`Mesero "${mesero.name}" eliminado correctamente`, 'success');
     } else {
-      alert("Error al eliminar el mesero.");
+      showStatusMessage('Error al eliminar el mesero', 'error');
+    }
+  }
+}
+// Mostrar mensajes de estado
+function showStatusMessage(message, type = 'info') {
+  const statusLabel = document.getElementById("statusLabel");
+  if (statusLabel) {
+    statusLabel.textContent = message;
+    statusLabel.className = `status-message ${type}`;
+    statusLabel.style.display = 'block';
+    
+    // Ocultar después de 5 segundos (excepto para errores)
+    if (type !== 'error') {
+      setTimeout(() => {
+        statusLabel.style.display = 'none';
+      }, 5000);
     }
   }
 }
@@ -281,8 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Exponer funciones al ámbito global para eventos onclick
 window.registerMesero = registerMesero;
-window.deleteMeseroByName = deleteMeseroByName;
 window.editMesero = editMesero;
 window.filterMeseros = filterMeseros;
 window.deleteMesero = deleteMesero;
 window.renderMeseros = renderMeseros;
+// Exponer funciones globales
+window.togglePassword = togglePasswordVisibility;
+window.cancelEdit = cancelEdit;
