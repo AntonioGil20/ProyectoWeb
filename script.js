@@ -183,7 +183,21 @@ function cargarVista(vista) {
                 "Error al cargar funciones de ingredientes";
             }
           });
-      } else if (vista === "arqueos") {
+      } else if (vista === "config") {
+  import("./scripts/config.js")
+    .then((module) => {
+      console.log("Módulo de configuración cargado");
+      // No necesitas llamar a ninguna función aquí porque el módulo
+      // ya ejecuta su código al cargarse (DOMContentLoaded)
+    })
+    .catch((err) => {
+      console.error("Error al cargar config.js:", err);
+      if (errorMessage) {
+        errorMessage.textContent = "Error al cargar funciones de configuración";
+      }
+    });
+}
+       else if (vista === "arqueos") {
         import("./scripts/arqueos.js")
           .then((module) => {
             console.log("Módulo de arqueos cargado");

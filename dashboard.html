@@ -18,6 +18,9 @@
       background-color: #201D1E;
       padding: 15px 20px;
       color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+
     }
 
     .nav-icons {
@@ -27,10 +30,11 @@
     }
 
     .navbar img {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.3s ease;
+      
     }
     
     .nav-icons .logo {
@@ -48,24 +52,51 @@
       background-color: gray;
     }
 
-    .datetime {
-      text-align: center;
-      font-family: 'Lucida Console', monospace;
-      font-size: 15px;
-      margin-right: 300px;
-    }
+.datetime {
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 350px;
+}
 
-    .view-container {
-      padding: 20px;
-    }
+#fecha {
+  font-weight: bold;
+  color: #FFA500; /* Naranja temático de tacos */
+  margin-bottom: 3px;
+}
 
-    .view {
-      display: none;
-    }
+#hora {
+  font-size: 1.0em;
+  background-color: rgba(255,255,255,0.1);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'Courier New', monospace;
+}
 
-    .view.active {
-      display: block;
-    }
+
+.view-container {
+  padding: 20px;
+  margin: 0 auto;
+  min-height: calc(100vh - 110px);
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+/* Transición suave entre vistas */
+.view {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.view.active {
+  display: block;
+  opacity: 1;
+}
 
     #errorMessage {
       color: red;

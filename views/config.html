@@ -3,161 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/style/config.css">
   <title>Configuración de Impresoras</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: auto;
-      background-color: white;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin: 10px 0;
-    }
-
-    .section-divider {
-      border-top: 1px solid #ccc;
-      margin: 10px 0;
-    }
-
-    .horizontal-section {
-      display: flex;
-      justify-content: space-between;
-      gap: 40px;
-      padding: 20px 0;
-    }
-
-    .column {
-      flex: 1;
-    }
-
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-size: 16px;
-      color: #333;
-    }
-
-    select, input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      background-color: #eaeaea;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .switch-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .checkbox-group {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .update-section {
-      margin-top: 30px;
-    }
-
-    .input-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .button {
-      background-color: forestgreen;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .status-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .status-label {
-      background-color: gray;
-      color: white;
-      padding: 10px;
-      border-radius: 4px;
-    }
-
-    .porcentaje-section {
-      margin-top: 30px;
-      text-align: center;
-    }
-
-    .porcentaje-section input {
-      width: 100%;
-      margin-top: 10px;
-      padding: 8px;
-      font-size: 16px;
-      background-color: whitesmoke;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .activity-indicator {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background-color: #ccc;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
     <h1>Configuración de Impresoras</h1>
+      <div id="global-status" class="printer-status"></div>
     <div class="section-divider"></div>
 
     <div class="horizontal-section">
       <div class="column">
         <label>Impresora de tickets</label>
         <label>Seleccionar Impresora de Tickets:</label>
-        <select></select>
+          <select id="printer-tickets" class="form-control"></select>
 
         <label class="switch-label">
           <span>Habilitar Impresión de Tickets:</span>
-          <input type="checkbox" />
+          <input type="checkbox" id="enable-tickets" checked />
         </label>
       </div>
 
       <div class="column">
         <label>Impresora de comandas</label>
         <label>Seleccionar Impresora de Comandas:</label>
-        <select></select>
+        <select id="printer-comandas" class="form-control"></select>
 
         <label class="switch-label">
           <span>Habilitar Impresión de Comandas:</span>
-          <input type="checkbox" />
+          <input type="checkbox" id="enable-comandas" checked />
         </label>
       </div>
     </div>
@@ -216,5 +91,6 @@
       <button class="button" style="margin-top: 20px;">Actualizar Porcentaje</button>
     </div>
   </div>
+  <script src="/scripts/config.js"></script>
 </body>
 </html>
